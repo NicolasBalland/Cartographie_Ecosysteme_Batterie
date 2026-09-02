@@ -1441,6 +1441,7 @@
         label_teaching_type: "Type d'enseignement",
         sec_institution_location: "Établissement & Localisation",
         btn_france_competences: "Consulter sur France Compétences",
+        btn_school_site: "Site web de l'établissement",
         btn_official_site: "Visiter le site officiel",
         btn_center_map: "Centrer la carte",
         sec_cdv: "Chaîne de Valeur (CDV)",
@@ -1513,6 +1514,7 @@
         label_teaching_type: "Teaching format",
         sec_institution_location: "Institution & Location",
         btn_france_competences: "View on France Compétences",
+        btn_school_site: "Institution website",
         btn_official_site: "Visit official website",
         btn_center_map: "Center map",
         sec_cdv: "Value Chain (CDV)",
@@ -2323,6 +2325,11 @@
             ${item.lienFranceCompetences ? `
               <a href="${encodeURI(item.lienFranceCompetences)}" target="_blank" rel="noopener noreferrer" class="fr-btn fr-btn--primary">
                 <i class="ri-external-link-line"></i> ${dict.btn_france_competences}
+              </a>
+            ` : ''}
+            ${item.siteWebEtablissement ? `
+              <a href="${encodeURI(item.siteWebEtablissement)}" target="_blank" rel="noopener noreferrer" class="vldb-btn vldb-btn--green">
+                <i class="ri-global-line"></i> ${dict.btn_school_site}
               </a>
             ` : ''}
             <button class="fr-btn fr-btn--secondary" onclick="centerMapOn(${item.lat}, ${item.lon})">
