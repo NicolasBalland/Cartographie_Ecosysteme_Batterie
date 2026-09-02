@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="fr" data-fr-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Écosystème Batterie - Carte Interactive des Formations et Entreprises</title>
+  
+  <!-- Favicon Batterie (SVG autonome haute définition) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='25' height='16' x='2' y='8' rx='3' fill='%23000091'/%3E%3Crect width='3' height='8' x='27' y='12' rx='1.5' fill='%23000091'/%3E%3Cpath d='M15 10L9.5 17H14L13 22L18.5 15H14L15 10Z' fill='%23FACC15'/%3E%3C/svg%3E">
+  <link rel="alternate icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔋%3C/text%3E%3C/svg%3E">
+
+  <!-- Polices Marianne & DSFR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Marianne:ital,wght@0,300;0,400;0,500;0,700;0,800;1,400;1,700&family=Spectral:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Remix Icons pour l'iconographie moderne -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
+
+  <!-- Leaflet & MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+
+  <!-- Feuille de styles DSFR & Cartographie -->
+  <style>
+    :root {
+      --blue-france-sun-113: #000091;
+      --blue-france-main-525: #6a6af4;
+      --blue-france-975: #f5f5fe;
+      --blue-france-925: #e3e3fd;
+      --red-marianne-425: #e1000f;
+      --green-formation-main: #1b8a3b;
+      --green-formation-light: #e6f6ec;
+      --green-formation-dark: #0f5c25;
+      --blue-entreprise-main: #0066cc;
+      --blue-entreprise-light: #e8f3fc;
+      --blue-entreprise-dark: #00458a;
+      --grey-50: #161616;
+      --grey-200: #3a3a3a;
+      --grey-400: #666666;
+      --grey-800: #cecece;
+      --grey-900: #dddddd;
+      --grey-950: #eeeeee;
+      --grey-975: #f6f6f6;
+      --white: #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.18);
+      --font-marianne: 'Marianne', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-marianne);
+      color: var(--grey-50);
+      background-color: var(--grey-975);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* En-tête officiel DSFR */
+    .fr-header {
+      background-color: var(--white);
+      border-bottom: 2px solid var(--blue-france-sun-113);
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .fr-header__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .fr-header__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background-color: var(--blue-france-975);
+      color: var(--blue-france-sun-113);
+      font-size: 1.4rem;
+    }
+
+    .fr-header__title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fr-header__title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--blue-france-sun-113);
+      letter-spacing: -0.01em;
+    }
+
+    .fr-header__subtitle {
+      font-size: 0.78rem;
+      color: var(--grey-400);
+      font-weight: 500;
+    }
+
+    .fr-header__tools {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Bouton de bascule vers les statistiques */
+    .nav-switch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background-color: var(--white);
+      border: 1px solid var(--blue-france-sun-113);
+      color: var(--blue-france-sun-113);
+      padding: 0.32rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-switch-btn:hover {
+      background-color: var(--blue-france-sun-113);
+      color: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Sélecteur de langue DSFR */
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background-color: var(--grey-975);
+      border: 1px solid var(--grey-800);
+      border-radius: 4px;
+      padding: 0.22rem 0.5rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .lang-switcher i {
+      color: var(--blue-france-sun-113);
+      font-size: 0.95rem;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--grey-400);
+      font-weight: 600;
+      font-size: 0.76rem;
+      cursor: pointer;
+      padding: 0.15rem 0.35rem;
+      border-radius: 2px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .lang-btn:hover {
+      color: var(--blue-france-sun-113);
+      background-color: var(--grey-900);
+    }
+
+    .lang-btn.active {
+      color: var(--blue-france-sun-113);
+      font-weight: 800;
+      background-color: var(--blue-france-925);
+    }
+
+    .lang-divider {
+      color: var(--grey-800);
+      font-size: 0.7rem;
+      user-select: none;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 4px;
+      background: var(--blue-france-975);
+      color: var(--blue-france-sun-113);
+      border: 1px solid var(--blue-france-925);
+    }
+
+    .status-badge.live::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    }
+
+    /* Masquage des bannières Google Translate par défaut */
+    .goog-te-banner-frame { display: none !important; }
+    body { top: 0px !important; }
+    #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+    .goog-text-highlight { background: none !important; box-shadow: none !important; }
+
+    /* Layout principal */
+    .app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Sidebar (Filtres) */
+    .sidebar {
+      width: 385px;
+      max-width: 90vw;
+      background-color: var(--white);
+      border-right: 1px solid var(--grey-900);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      z-index: 900;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+
+    .sidebar-toggle-btn {
+      position: absolute;
+      top: 1rem;
+      left: 100%;
+      z-index: 950;
+      background-color: var(--blue-france-sun-113);
+      color: var(--white);
+      border: none;
+      border-radius: 0 6px 6px 0;
+      padding: 0.6rem 0.5rem;
+      cursor: pointer;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background-color: #1212ff;
+    }
+
+    .sidebar-header {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--grey-900);
+      background-color: var(--grey-975);
+    }
+
+    .sidebar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--grey-50);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-reset-all {
+      background: none;
+      border: none;
+      color: var(--blue-france-sun-113);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      text-decoration: underline;
+    }
+
+    .btn-reset-all:hover {
+      color: var(--red-marianne-425);
+    }
+
+    /* 2 Onglets DSFR */
+    .filter-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--grey-900);
+      background-color: var(--white);
+    }
+
+    .filter-tab {
+      flex: 1;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+      font-size: 0.84rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--grey-400);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .filter-tab.active {
+      color: var(--blue-france-sun-113);
+      border-bottom-color: var(--blue-france-sun-113);
+      background-color: var(--blue-france-975);
+    }
+
+    .filter-tab .tab-badge {
+      font-size: 0.7rem;
+      padding: 0.12rem 0.5rem;
+      border-radius: 12px;
+      background: var(--grey-950);
+      color: var(--grey-200);
+    }
+
+    .filter-tab.active .tab-badge.badge-formation {
+      background-color: var(--green-formation-main);
+      color: var(--white);
+    }
+
+    .filter-tab.active .tab-badge.badge-entreprise {
+      background-color: var(--blue-entreprise-main);
+      color: var(--white);
+    }
+
+    /* Contenu scrollable des filtres */
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .tab-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .tab-panel.active {
+      display: flex;
+    }
+
+    /* Couches cross-toggle */
+    .layer-card-toggle {
+      border: 1px solid var(--grey-900);
+      border-radius: 8px;
+      padding: 0.75rem;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .layer-card-toggle.formation {
+      border-left: 4px solid var(--green-formation-main);
+      background-color: #f6fbf7;
+    }
+
+    .layer-card-toggle.entreprise {
+      border-left: 4px solid var(--blue-entreprise-main);
+      background-color: #f4f8fd;
+    }
+
+    .layer-card-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .layer-card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--grey-50);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .layer-card-count {
+      font-size: 0.73rem;
+      color: var(--grey-400);
+      margin-top: 0.15rem;
+    }
+
+    /* Section divider */
+    .section-divider-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--grey-400);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--grey-900);
+      padding-bottom: 0.35rem;
+      margin-top: 0.2rem;
+    }
+
+    .btn-reset-section {
+      background: none;
+      border: none;
+      color: var(--blue-france-sun-113);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* Form Inputs */
+    .fr-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .fr-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--grey-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .fr-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .fr-input-wrap i {
+      position: absolute;
+      left: 0.65rem;
+      color: var(--grey-400);
+      font-size: 0.95rem;
+    }
+
+    .fr-input {
+      width: 100%;
+      padding: 0.5rem 0.65rem 0.5rem 2rem;
+      font-size: 0.8rem;
+      font-family: inherit;
+      border: 1px solid var(--grey-800);
+      border-radius: 4px;
+      background-color: var(--white);
+      color: var(--grey-50);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .fr-input:focus, .fr-select:focus {
+      outline: 2px solid var(--blue-france-sun-113);
+      outline-offset: 1px;
+      border-color: var(--blue-france-sun-113);
+    }
+
+    .fr-select {
+      width: 100%;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.8rem;
+      font-family: inherit;
+      border: 1px solid var(--grey-800);
+      border-radius: 4px;
+      background-color: var(--white);
+      color: var(--grey-50);
+      cursor: pointer;
+    }
+
+    /* Checkbox & Radio Tags Multi-select */
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.25rem;
+    }
+
+    .chip-item {
+      position: relative;
+    }
+
+    .chip-item input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chip-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      border-radius: 14px;
+      border: 1px solid var(--grey-800);
+      background-color: var(--grey-975);
+      color: var(--grey-200);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .chip-label:hover {
+      border-color: var(--blue-france-sun-113);
+      background-color: var(--blue-france-975);
+    }
+
+    .chip-item input[type="checkbox"]:checked + .chip-label {
+      background-color: var(--blue-france-sun-113);
+      color: var(--white);
+      border-color: var(--blue-france-sun-113);
+    }
+
+    .chip-item.chip-green input[type="checkbox"]:checked + .chip-label {
+      background-color: var(--green-formation-main);
+      border-color: var(--green-formation-main);
+    }
+
+    .chip-item.chip-blue input[type="checkbox"]:checked + .chip-label {
+      background-color: var(--blue-entreprise-main);
+      border-color: var(--blue-entreprise-main);
+    }
+
+    /* Toggle Switch DSFR */
+    .fr-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .fr-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      background-color: var(--grey-800);
+      border-radius: 20px;
+      transition: .3s;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      border-radius: 50%;
+      transition: .3s;
+    }
+
+    .fr-toggle input:checked + .toggle-slider {
+      background-color: var(--blue-france-sun-113);
+    }
+
+    .fr-toggle.toggle-green input:checked + .toggle-slider {
+      background-color: var(--green-formation-main);
+    }
+
+    .fr-toggle.toggle-blue input:checked + .toggle-slider {
+      background-color: var(--blue-entreprise-main);
+    }
+
+    .fr-toggle input:checked + .toggle-slider:before {
+      transform: translateX(16px);
+    }
+
+    /* Carte Leaflet */
+    #map {
+      flex: 1;
+      height: 100%;
+      width: 100%;
+      background-color: #e5e5e5;
+      z-index: 100;
+    }
+
+    /* Autocomplete BAN Address Bar floating over map */
+    .map-floating-search {
+      position: absolute;
+      top: 1rem;
+      left: 4rem;
+      z-index: 800;
+      width: 320px;
+      max-width: calc(100vw - 120px);
+    }
+
+    .address-search-card {
+      background: var(--white);
+      border-radius: 6px;
+      box-shadow: var(--shadow-md);
+      padding: 0.35rem 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid var(--grey-800);
+    }
+
+    .address-search-card input {
+      border: none;
+      outline: none;
+      font-size: 0.82rem;
+      font-family: inherit;
+      width: 100%;
+      color: var(--grey-50);
+    }
+
+    .address-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border: 1px solid var(--grey-800);
+      border-radius: 0 0 6px 6px;
+      box-shadow: var(--shadow-lg);
+      margin-top: 2px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .address-item {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.78rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--grey-950);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .address-item:hover {
+      background-color: var(--blue-france-975);
+      color: var(--blue-france-sun-113);
+    }
+
+    /* Offcanvas (Fiche de détail) */
+    .offcanvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 440px;
+      max-width: 95vw;
+      height: 100%;
+      background: var(--white);
+      border-left: 1px solid var(--grey-900);
+      z-index: 950;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.18);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .offcanvas.open {
+      transform: translateX(0);
+    }
+
+    .offcanvas-header {
+      padding: 1.2rem 1.25rem 1rem;
+      background-color: var(--grey-975);
+      border-bottom: 1px solid var(--grey-900);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .offcanvas-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-formation-theme {
+      background: var(--green-formation-light);
+      color: var(--green-formation-dark);
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-entreprise-theme {
+      background: var(--blue-entreprise-light);
+      color: var(--blue-entreprise-dark);
+      border: 1px solid #bfdbfe;
+    }
+
+    .offcanvas-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--grey-50);
+      line-height: 1.3;
+      margin-top: 0.4rem;
+    }
+
+    .offcanvas-subtitle {
+      font-size: 0.85rem;
+      color: var(--grey-400);
+      margin-top: 0.2rem;
+    }
+
+    .offcanvas-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--grey-400);
+      cursor: pointer;
+      padding: 0.2rem;
+      border-radius: 4px;
+      line-height: 1;
+      transition: all 0.2s;
+    }
+
+    .offcanvas-close-btn:hover {
+      background-color: var(--grey-900);
+      color: var(--grey-50);
+    }
+
+    .offcanvas-body {
+      padding: 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .detail-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--grey-400);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-bottom: 1px solid var(--grey-950);
+      padding-bottom: 0.3rem;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .detail-card {
+      background-color: var(--grey-975);
+      padding: 0.5rem 0.65rem;
+      border-radius: 4px;
+      border-left: 3px solid var(--blue-france-sun-113);
+    }
+
+    .detail-card.green-accent {
+      border-left-color: var(--green-formation-main);
+    }
+
+    .detail-card.blue-accent {
+      border-left-color: var(--blue-entreprise-main);
+    }
+
+    .detail-card-label {
+      font-size: 0.68rem;
+      color: var(--grey-400);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .detail-card-val {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--grey-50);
+      margin-top: 0.15rem;
+    }
+
+    .detail-text-block {
+      font-size: 0.83rem;
+      line-height: 1.5;
+      color: var(--grey-200);
+      background-color: var(--grey-975);
+      padding: 0.75rem;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    .offcanvas-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .fr-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .fr-btn--primary {
+      background-color: var(--blue-france-sun-113);
+      color: var(--white);
+    }
+
+    .fr-btn--primary:hover {
+      background-color: #1212ff;
+    }
+
+    .fr-btn--green {
+      background-color: var(--green-formation-main);
+      color: var(--white);
+    }
+
+    .fr-btn--green:hover {
+      background-color: var(--green-formation-dark);
+    }
+
+    .fr-btn--secondary {
+      background-color: var(--white);
+      color: var(--blue-france-sun-113);
+      border-color: var(--blue-france-sun-113);
+    }
+
+    .fr-btn--secondary:hover {
+      background-color: var(--blue-france-975);
+    }
+
+    /* Clusters style uMap */
+    .custom-cluster {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-family: var(--font-marianne);
+      font-weight: 700;
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .custom-cluster:hover {
+      transform: scale(1.1);
+    }
+
+    .cluster-formation-small {
+      background-color: rgba(46, 125, 50, 0.85);
+      border: 3px solid rgba(230, 246, 236, 0.9);
+      width: 32px;
+      height: 32px;
+      font-size: 11px;
+    }
+
+    .cluster-formation-medium {
+      background-color: rgba(46, 125, 50, 0.9);
+      border: 4px solid rgba(230, 246, 236, 0.95);
+      width: 40px;
+      height: 40px;
+      font-size: 13px;
+    }
+
+    .cluster-formation-large {
+      background-color: rgba(27, 94, 32, 0.95);
+      border: 5px solid rgba(230, 246, 236, 1);
+      width: 48px;
+      height: 48px;
+      font-size: 14px;
+    }
+
+    .cluster-entreprise-small {
+      background-color: rgba(0, 102, 204, 0.85);
+      border: 3px solid rgba(232, 243, 252, 0.9);
+      width: 32px;
+      height: 32px;
+      font-size: 11px;
+    }
+
+    .cluster-entreprise-medium {
+      background-color: rgba(0, 83, 179, 0.9);
+      border: 4px solid rgba(232, 243, 252, 0.95);
+      width: 40px;
+      height: 40px;
+      font-size: 13px;
+    }
+
+    .cluster-entreprise-large {
+      background-color: rgba(0, 60, 138, 0.95);
+      border: 5px solid rgba(232, 243, 252, 1);
+      width: 48px;
+      height: 48px;
+      font-size: 14px;
+    }
+
+    /* Custom Leaflet Pin Markers */
+    .custom-marker-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .custom-marker-pin i {
+      transform: rotate(45deg);
+      color: white;
+      font-size: 14px;
+    }
+
+    .custom-marker-pin.formation-pin {
+      background-color: var(--green-formation-main);
+      border: 2px solid #ffffff;
+    }
+
+    .custom-marker-pin.entreprise-pin {
+      background-color: var(--blue-entreprise-main);
+      border: 2px solid #ffffff;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.9);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid var(--blue-france-925);
+      border-top-color: var(--blue-france-sun-113);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Leaflet popup styling override DSFR */
+    .leaflet-popup-content-wrapper {
+      border-radius: 6px;
+      box-shadow: var(--shadow-md);
+      padding: 0;
+      overflow: hidden;
+      font-family: var(--font-marianne);
+    }
+
+    .leaflet-popup-content {
+      margin: 0;
+      line-height: 1.4;
+      font-size: 0.8rem;
+    }
+
+    .mini-popup-content {
+      padding: 0.8rem 1rem;
+      min-width: 200px;
+      cursor: pointer;
+    }
+
+    .mini-popup-header {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+      color: var(--grey-50);
+      line-height: 1.25;
+    }
+
+    .mini-popup-sub {
+      color: var(--grey-200);
+      font-size: 0.78rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .mini-popup-geo {
+      color: var(--grey-400);
+      font-size: 0.74rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .fr-header__brand {
+        gap: 0.5rem;
+      }
+      .fr-header__title {
+        font-size: 0.95rem;
+      }
+      .sidebar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .offcanvas {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Google Translate Element Container (invisible) -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <!-- En-tête officiel DSFR -->
+  <header class="fr-header">
+    <div class="fr-header__brand">
+      <div class="fr-header__icon">
+        <i class="ri-battery-2-charge-fill"></i>
+      </div>
+      <div class="fr-header__title-group">
+        <div class="fr-header__title" data-i18n="app_title">
+          Écosystème Batterie & Formations
+        </div>
+        <div class="fr-header__subtitle" data-i18n="app_subtitle">Cartographie interactive de la filière et de l'offre de compétences</div>
+      </div>
+    </div>
+    <div class="fr-header__tools">
+      <!-- Bouton discret menant aux statistiques / dataviz -->
+      <a href="stats.html" class="nav-switch-btn" title="Statistiques & Data Visualisation">
+        <i class="ri-bar-chart-2-line"></i>
+        <span data-i18n="btn_stats">Statistiques & Ratios</span>
+      </a>
+
+      <!-- Sélecteur de langue FR / EN -->
+      <div class="lang-switcher" title="Changer de langue / Change language">
+        <i class="ri-global-line"></i>
+        <button type="button" class="lang-btn active" id="btn-lang-fr" onclick="setAppLanguage('fr')">FR</button>
+        <span class="lang-divider">|</span>
+        <button type="button" class="lang-btn" id="btn-lang-en" onclick="setAppLanguage('en')">EN</button>
+      </div>
+      <span class="status-badge live" id="live-status" data-i18n="live_status">Données Grist en direct</span>
+    </div>
+  </header>
+
+  <!-- Conteneur principal -->
+  <div class="app-container">
+
+    <!-- Volet latéral de filtres (Sidebar) -->
+    <aside class="sidebar" id="sidebar">
+      
+      <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" title="Afficher/Masquer les filtres" aria-label="Afficher/Masquer les filtres">
+        <i class="ri-arrow-left-s-line" id="sidebar-toggle-icon"></i>
+      </button>
+
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span><i class="ri-filter-3-line"></i> <span data-i18n="sidebar_title">Filtres de recherche</span></span>
+          <button class="btn-reset-all" id="btn-reset-all" title="Réinitialiser tous les filtres">
+            <i class="ri-refresh-line"></i> <span data-i18n="reset_all">Réinitialiser tout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2 Onglets thématiques -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-tab="tab-formations">
+          <span><i class="ri-graduation-cap-line"></i> <span data-i18n="tab_formations">Formations</span></span>
+          <span class="tab-badge badge-formation" id="badge-count-formations">0 / 0</span>
+        </button>
+        <button class="filter-tab" data-tab="tab-entreprises">
+          <span><i class="ri-building-line"></i> <span data-i18n="tab_entreprises">Entreprises</span></span>
+          <span class="tab-badge badge-entreprise" id="badge-count-entreprises">0 / 0</span>
+        </button>
+      </div>
+
+      <!-- Contenu des filtres -->
+      <div class="sidebar-content">
+
+        <!-- ============================================== -->
+        <!-- ONGLET 1: FORMATIONS                          -->
+        <!-- ============================================== -->
+        <div class="tab-panel active" id="tab-formations">
+          
+          <!-- Interrupteur pour masquer l'AUTRE calque (Entreprises) -->
+          <div class="layer-card-toggle entreprise">
+            <div class="layer-card-info">
+              <span class="layer-card-title">
+                <i class="ri-building-line" style="color: var(--blue-entreprise-main);"></i>
+                <span data-i18n="toggle_show_entreprises">Afficher les Entreprises</span>
+              </span>
+              <span class="layer-card-count" id="formation-tab-entreprise-count">221 entreprise(s) sur la carte</span>
+            </div>
+            <label class="fr-toggle toggle-blue">
+              <input type="checkbox" id="toggle-layer-entreprise-from-formations" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Section 1 : Localisation géographique (Formations) -->
+          <div class="section-divider-title">
+            <span><i class="ri-map-pin-range-line"></i> <span data-i18n="sec_location">Localisation</span></span>
+            <button class="btn-reset-section" onclick="clearGeoFilter()" data-i18n="clear_location">Effacer lieu</button>
+          </div>
+
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-geo-region-form" data-i18n="label_region">Région</label>
+            <select id="filter-geo-region-form" class="fr-select geo-region-select">
+              <option value="" data-i18n="all_regions">Toutes les régions</option>
+            </select>
+          </div>
+
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-geo-dept-form" data-i18n="label_dept">Département</label>
+            <select id="filter-geo-dept-form" class="fr-select geo-dept-select">
+              <option value="" data-i18n="all_depts">Tous les départements</option>
+            </select>
+          </div>
+
+          <!-- Section 2 : Critères Formations -->
+          <div class="section-divider-title">
+            <span><i class="ri-equalizer-line"></i> <span data-i18n="sec_criteria_form">Critères Formation</span></span>
+          </div>
+
+          <!-- Recherche textuelle formations -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="search-formation" data-i18n="search_form_label">Recherche formation / établissement</label>
+            <div class="fr-input-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" id="search-formation" class="fr-input" placeholder="Intitulé, établissement, ville, RNCP..." data-i18n-placeholder="search_form_ph">
+            </div>
+          </div>
+
+          <!-- Niveau de diplôme -->
+          <div class="fr-form-group">
+            <label class="fr-label" data-i18n="rncp_level_label">Niveau de diplôme (RNCP)</label>
+            <div class="chips-group" id="filter-formation-niveau">
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-3" value="3">
+                <label class="chip-label" for="niv-3" data-i18n="niv_3">Niveau 3 (CAP)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-4" value="4">
+                <label class="chip-label" for="niv-4">Niveau 4 (Bac)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-5" value="5">
+                <label class="chip-label" for="niv-5">Niveau 5 (Bac+2 / BTS)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-6" value="6">
+                <label class="chip-label" for="niv-6">Niveau 6 (Bac+3 / Licence / BUT)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-7" value="7">
+                <label class="chip-label" for="niv-7">Niveau 7 (Bac+5 / Master / Ingé)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type de diplôme -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-formation-diplome" data-i18n="degree_type_label">Type de diplôme</label>
+            <select id="filter-formation-diplome" class="fr-select">
+              <option value="" data-i18n="all_degrees">Tous les types de diplômes</option>
+            </select>
+          </div>
+
+          <!-- Métier cible -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-formation-metier" data-i18n="job_target_label">Filière / Métier visé</label>
+            <select id="filter-formation-metier" class="fr-select">
+              <option value="" data-i18n="all_jobs">Tous les métiers</option>
+            </select>
+          </div>
+
+          <!-- Type de formation / Modalité -->
+          <div class="fr-form-group">
+            <label class="fr-label" data-i18n="modality_label">Modalité de formation</label>
+            <div class="chips-group" id="filter-formation-modalite">
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="mod-init" value="initiale">
+                <label class="chip-label" for="mod-init" data-i18n="mod_init">Formation initiale</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="mod-alt" value="alternance">
+                <label class="chip-label" for="mod-alt" data-i18n="mod_alt">Alternance / Apprentissage</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="mod-cont" value="continue">
+                <label class="chip-label" for="mod-cont" data-i18n="mod_cont">Formation continue</label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- ONGLET 2: ENTREPRISES                         -->
+        <!-- ============================================== -->
+        <div class="tab-panel" id="tab-entreprises">
+
+          <!-- Interrupteur pour masquer l'AUTRE calque (Formations) -->
+          <div class="layer-card-toggle formation">
+            <div class="layer-card-info">
+              <span class="layer-card-title">
+                <i class="ri-graduation-cap-line" style="color: var(--green-formation-main);"></i>
+                <span data-i18n="toggle_show_formations">Afficher les Formations</span>
+              </span>
+              <span class="layer-card-count" id="entreprise-tab-formation-count">639 formation(s) sur la carte</span>
+            </div>
+            <label class="fr-toggle toggle-green">
+              <input type="checkbox" id="toggle-layer-formation-from-entreprises" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Section 1 : Localisation géographique (Entreprises) -->
+          <div class="section-divider-title">
+            <span><i class="ri-map-pin-range-line"></i> <span data-i18n="sec_location">Localisation</span></span>
+            <button class="btn-reset-section" onclick="clearGeoFilter()" data-i18n="clear_location">Effacer lieu</button>
+          </div>
+
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-geo-region-ent" data-i18n="label_region">Région</label>
+            <select id="filter-geo-region-ent" class="fr-select geo-region-select">
+              <option value="" data-i18n="all_regions">Toutes les régions</option>
+            </select>
+          </div>
+
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-geo-dept-ent" data-i18n="label_dept">Département</label>
+            <select id="filter-geo-dept-ent" class="fr-select geo-dept-select">
+              <option value="" data-i18n="all_depts">Tous les départements</option>
+            </select>
+          </div>
+
+          <!-- Section 2 : Critères Entreprises -->
+          <div class="section-divider-title">
+            <span><i class="ri-equalizer-line"></i> <span data-i18n="sec_criteria_ent">Critères Entreprise</span></span>
+          </div>
+
+          <!-- Recherche textuelle entreprise -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="search-entreprise" data-i18n="search_ent_label">Recherche entreprise / mots-clés</label>
+            <div class="fr-input-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" id="search-entreprise" class="fr-input" placeholder="Entreprise, produit, activité, ville..." data-i18n-placeholder="search_ent_ph">
+            </div>
+          </div>
+
+          <!-- Segment Chaîne de Valeur (CDV) -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-entreprise-segment" data-i18n="cdv_segment_label">Segment Chaîne de Valeur (CDV)</label>
+            <select id="filter-entreprise-segment" class="fr-select">
+              <option value="" data-i18n="all_segments">Tous les segments CDV</option>
+            </select>
+          </div>
+
+          <!-- Maillon CDV (Libellé explicite Maillons CDV) -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-entreprise-maillon" data-i18n="cdv_link_label">Maillon spécifique Chaîne de Valeur (CDV)</label>
+            <select id="filter-entreprise-maillon" class="fr-select">
+              <option value="" data-i18n="all_links">Tous les maillons CDV</option>
+            </select>
+          </div>
+
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Zone Carte -->
+    <main id="map"></main>
+
+    <!-- Barre de recherche d'adresse flottante (API BAN) -->
+    <div class="map-floating-search">
+      <div class="address-search-card">
+        <i class="ri-map-pin-2-line" style="color: var(--blue-france-sun-113);"></i>
+        <input type="text" id="address-search-input" placeholder="Rechercher une ville, adresse..." data-i18n-placeholder="search_address_ph" autocomplete="off">
+        <i class="ri-loader-4-line spinner-icon" id="address-spinner" style="display: none; color: var(--grey-400);"></i>
+      </div>
+      <div class="address-results" id="address-results"></div>
+    </div>
+
+    <!-- Offcanvas latéral (Fiche détaillée) -->
+    <div class="offcanvas" id="offcanvas" aria-hidden="true">
+      <div class="offcanvas-header">
+        <div>
+          <span class="offcanvas-type-badge" id="offcanvas-badge">TYPE</span>
+          <h2 class="offcanvas-title" id="offcanvas-title">Titre principal</h2>
+          <div class="offcanvas-subtitle" id="offcanvas-subtitle">Sous-titre / Établissement</div>
+        </div>
+        <button class="offcanvas-close-btn" id="offcanvas-close-btn" title="Fermer la fiche" aria-label="Fermer la fiche">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="offcanvas-body" id="offcanvas-body">
+        <!-- Contenu dynamique injecté en JS -->
+      </div>
+    </div>
+
+    <!-- Écran de chargement initial -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="spinner"></div>
+      <div style="font-weight: 700; color: var(--blue-france-sun-113);" data-i18n="loading_title">Chargement des données de l'écosystème...</div>
+      <div style="font-size: 0.8rem; color: var(--grey-400);" data-i18n="loading_sub">Synchronisation avec les flux Grist en direct</div>
+    </div>
+
+  </div>
+
+  <!-- Bibliothèques JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- Google Translate Engine -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'fr',
+        includedLanguages: 'en,fr',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Application Logic & Internationalization -->
+  <script>
+    // Dictionnaire bilingue pour l'interface utilisateur
+    const I18N = {
+      fr: {
+        app_title: "Écosystème Batterie & Formations",
+        app_subtitle: "Cartographie interactive de la filière et de l'offre de compétences",
+        live_status: "Données Grist en direct",
+        btn_stats: "Statistiques & Ratios",
+        sidebar_title: "Filtres de recherche",
+        reset_all: "Réinitialiser tout",
+        tab_formations: "Formations",
+        tab_entreprises: "Entreprises",
+        toggle_show_entreprises: "Afficher les Entreprises",
+        toggle_show_formations: "Afficher les Formations",
+        sec_location: "Localisation",
+        clear_location: "Effacer lieu",
+        label_region: "Région",
+        label_dept: "Département",
+        all_regions: "Toutes les régions",
+        all_depts: "Tous les départements",
+        sec_criteria_form: "Critères Formation",
+        search_form_label: "Recherche formation / établissement",
+        search_form_ph: "Intitulé, établissement, ville, RNCP...",
+        rncp_level_label: "Niveau de diplôme (RNCP)",
+        niv_3: "Niveau 3 (CAP)",
+        niv_4: "Niveau 4 (Bac)",
+        niv_5: "Niveau 5 (Bac+2 / BTS)",
+        niv_6: "Niveau 6 (Bac+3 / Licence / BUT)",
+        niv_7: "Niveau 7 (Bac+5 / Master / Ingé)",
+        degree_type_label: "Type de diplôme",
+        all_degrees: "Tous les types de diplômes",
+        job_target_label: "Filière / Métier visé",
+        all_jobs: "Tous les métiers",
+        modality_label: "Modalité de formation",
+        mod_init: "Formation initiale",
+        mod_alt: "Alternance / Apprentissage",
+        mod_cont: "Formation continue",
+        sec_criteria_ent: "Critères Entreprise",
+        search_ent_label: "Recherche entreprise / mots-clés",
+        search_ent_ph: "Entreprise, produit, activité, ville...",
+        cdv_segment_label: "Segment Chaîne de Valeur (CDV)",
+        all_segments: "Tous les segments CDV",
+        cdv_link_label: "Maillon spécifique Chaîne de Valeur (CDV)",
+        all_links: "Tous les maillons CDV",
+        search_address_ph: "Rechercher une ville, adresse...",
+        loading_title: "Chargement des données de l'écosystème...",
+        loading_sub: "Synchronisation avec les flux Grist en direct",
+        badge_form: "Formation",
+        badge_ent: "Entreprise / Site",
+        sec_diploma_features: "Caractéristiques de la formation",
+        label_diploma_type: "Type de diplôme",
+        label_rncp_level: "Niveau RNCP",
+        label_acronym: "Acronyme",
+        label_rncp_code: "Code RNCP",
+        sec_job_modalities: "Métier & Modalités",
+        label_job_domain: "Métier / Domaine",
+        label_teaching_type: "Type d'enseignement",
+        sec_institution_location: "Établissement & Localisation",
+        btn_france_competences: "Consulter sur France Compétences",
+        btn_school_site: "Site web de l'établissement",
+        btn_official_site: "Visiter le site officiel",
+        btn_center_map: "Centrer la carte",
+        sec_cdv: "Chaîne de Valeur (CDV)",
+        label_cdv_segment: "Segment CDV",
+        label_cdv_link: "Maillon CDV",
+        label_site_status: "Statut du site",
+        label_actor_type: "Typologie d'acteur",
+        sec_products: "Produits & Solutions",
+        sec_activity_desc: "Descriptif de l'activité batterie",
+        sec_partnerships: "Partenariats AMI-CMA / Écosystème",
+        sec_location_siret: "Localisation & SIRET",
+        unspecified: "Non spécifié",
+        visible_formations: "formation(s) visible(s)",
+        visible_entreprises: "entreprise(s) visible(s)",
+        layer_hidden: "Calque masqué"
+      },
+      en: {
+        app_title: "Battery Ecosystem & Training",
+        app_subtitle: "Interactive mapping of the industry and skills offerings",
+        live_status: "Live Grist data",
+        btn_stats: "Statistics & Ratios",
+        sidebar_title: "Search filters",
+        reset_all: "Reset all",
+        tab_formations: "Training",
+        tab_entreprises: "Companies",
+        toggle_show_entreprises: "Show Companies",
+        toggle_show_formations: "Show Training programs",
+        sec_location: "Location",
+        clear_location: "Clear place",
+        label_region: "Region",
+        label_dept: "Department",
+        all_regions: "All regions",
+        all_depts: "All departments",
+        sec_criteria_form: "Training criteria",
+        search_form_label: "Search training / institution",
+        search_form_ph: "Title, institution, city, RNCP...",
+        rncp_level_label: "Degree Level (RNCP)",
+        niv_3: "Level 3 (CAP / Vocational)",
+        niv_4: "Level 4 (High School / Bac)",
+        niv_5: "Level 5 (Associate / Bac+2 / BTS)",
+        niv_6: "Level 6 (Bachelor / Bac+3 / BUT)",
+        niv_7: "Level 7 (Master / Bac+5 / Engineering)",
+        degree_type_label: "Degree type",
+        all_degrees: "All degree types",
+        job_target_label: "Target profession / field",
+        all_jobs: "All professions",
+        modality_label: "Training format",
+        mod_init: "Initial training",
+        mod_alt: "Work-study / Apprenticeship",
+        mod_cont: "Continuing education",
+        sec_criteria_ent: "Company criteria",
+        search_ent_label: "Search company / keywords",
+        search_ent_ph: "Company, product, activity, city...",
+        cdv_segment_label: "Value Chain Segment (CDV)",
+        all_segments: "All CDV segments",
+        cdv_link_label: "Specific Value Chain Link (CDV)",
+        all_links: "All CDV Links",
+        search_address_ph: "Search a city, address...",
+        loading_title: "Loading ecosystem data...",
+        loading_sub: "Real-time sync with Grist data feeds",
+        badge_form: "Training",
+        badge_ent: "Company / Site",
+        sec_diploma_features: "Training details",
+        label_diploma_type: "Degree type",
+        label_rncp_level: "RNCP Level",
+        label_acronym: "Acronym",
+        label_rncp_code: "RNCP Code",
+        sec_job_modalities: "Profession & Modalities",
+        label_job_domain: "Profession / Domain",
+        label_teaching_type: "Teaching format",
+        sec_institution_location: "Institution & Location",
+        btn_france_competences: "View on France Compétences",
+        btn_school_site: "Institution website",
+        btn_official_site: "Visit official website",
+        btn_center_map: "Center map",
+        sec_cdv: "Value Chain (CDV)",
+        label_cdv_segment: "CDV Segment",
+        label_cdv_link: "CDV Link",
+        label_site_status: "Site status",
+        label_actor_type: "Actor type",
+        sec_products: "Products & Solutions",
+        sec_activity_desc: "Battery activity description",
+        sec_partnerships: "AMI-CMA / Ecosystem Partnerships",
+        sec_location_siret: "Location & SIRET",
+        unspecified: "Not specified",
+        visible_formations: "training(s) visible",
+        visible_entreprises: "company(ies) visible",
+        layer_hidden: "Layer hidden"
+      }
+    };
+
+    let currentLang = 'fr';
+
+    // Fonction de bascule de langue
+    window.setAppLanguage = function(lang) {
+      currentLang = lang;
+
+      document.getElementById('btn-lang-fr').classList.toggle('active', lang === 'fr');
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      document.documentElement.lang = lang;
+
+      const dict = I18N[lang] || I18N.fr;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) el.setAttribute('placeholder', dict[key]);
+      });
+
+      try {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+          select.value = lang;
+          select.dispatchEvent(new Event('change'));
+        } else {
+          if (lang === 'en') {
+            document.cookie = "googtrans=/fr/en; path=/";
+          } else {
+            document.cookie = "googtrans=/fr/fr; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+          }
+        }
+      } catch (e) {}
+
+      updateCounts();
+
+      if (state.selectedItem) {
+        openDetailView(state.selectedItem.id);
+      }
+    };
+
+    // Référentiel complet des Départements et Régions françaises
+    const DEPT_INFO = {
+      '01': { dept: '01 - Ain', region: 'Auvergne-Rhône-Alpes' },
+      '02': { dept: '02 - Aisne', region: 'Hauts-de-France' },
+      '03': { dept: '03 - Allier', region: 'Auvergne-Rhône-Alpes' },
+      '04': { dept: '04 - Alpes-de-Haute-Provence', region: "Provence-Alpes-Côte d'Azur" },
+      '05': { dept: '05 - Hautes-Alpes', region: "Provence-Alpes-Côte d'Azur" },
+      '06': { dept: '06 - Alpes-Maritimes', region: "Provence-Alpes-Côte d'Azur" },
+      '07': { dept: '07 - Ardèche', region: 'Auvergne-Rhône-Alpes' },
+      '08': { dept: '08 - Ardennes', region: 'Grand Est' },
+      '09': { dept: '09 - Ariège', region: 'Occitanie' },
+      '10': { dept: '10 - Aube', region: 'Grand Est' },
+      '11': { dept: '11 - Aude', region: 'Occitanie' },
+      '12': { dept: '12 - Aveyron', region: 'Occitanie' },
+      '13': { dept: '13 - Bouches-du-Rhône', region: "Provence-Alpes-Côte d'Azur" },
+      '14': { dept: '14 - Calvados', region: 'Normandie' },
+      '15': { dept: '15 - Cantal', region: 'Auvergne-Rhône-Alpes' },
+      '16': { dept: '16 - Charente', region: 'Nouvelle-Aquitaine' },
+      '17': { dept: '17 - Charente-Maritime', region: 'Nouvelle-Aquitaine' },
+      '18': { dept: '18 - Cher', region: 'Centre-Val de Loire' },
+      '19': { dept: '19 - Corrèze', region: 'Nouvelle-Aquitaine' },
+      '21': { dept: "21 - Côte-d'Or", region: 'Bourgogne-Franche-Comté' },
+      '22': { dept: "22 - Côtes-d'Armor", region: 'Bretagne' },
+      '23': { dept: '23 - Creuse', region: 'Nouvelle-Aquitaine' },
+      '24': { dept: '24 - Dordogne', region: 'Nouvelle-Aquitaine' },
+      '25': { dept: '25 - Doubs', region: 'Bourgogne-Franche-Comté' },
+      '26': { dept: '26 - Drôme', region: 'Auvergne-Rhône-Alpes' },
+      '27': { dept: '27 - Eure', region: 'Normandie' },
+      '28': { dept: '28 - Eure-et-Loir', region: 'Centre-Val de Loire' },
+      '29': { dept: '29 - Finistère', region: 'Bretagne' },
+      '2A': { dept: '2A - Corse-du-Sud', region: 'Corse' },
+      '2B': { dept: '2B - Haute-Corse', region: 'Corse' },
+      '30': { dept: '30 - Gard', region: 'Occitanie' },
+      '31': { dept: '31 - Haute-Garonne', region: 'Occitanie' },
+      '32': { dept: '32 - Gers', region: 'Occitanie' },
+      '33': { dept: '33 - Gironde', region: 'Nouvelle-Aquitaine' },
+      '34': { dept: '34 - Hérault', region: 'Occitanie' },
+      '35': { dept: '35 - Ille-et-Vilaine', region: 'Bretagne' },
+      '36': { dept: '36 - Indre', region: 'Centre-Val de Loire' },
+      '37': { dept: '37 - Indre-et-Loire', region: 'Centre-Val de Loire' },
+      '38': { dept: '38 - Isère', region: 'Auvergne-Rhône-Alpes' },
+      '39': { dept: '39 - Jura', region: 'Bourgogne-Franche-Comté' },
+      '40': { dept: '40 - Landes', region: 'Nouvelle-Aquitaine' },
+      '41': { dept: '41 - Loir-et-Cher', region: 'Centre-Val de Loire' },
+      '42': { dept: '42 - Loire', region: 'Auvergne-Rhône-Alpes' },
+      '43': { dept: '43 - Haute-Loire', region: 'Auvergne-Rhône-Alpes' },
+      '44': { dept: '44 - Loire-Atlantique', region: 'Pays de la Loire' },
+      '45': { dept: '45 - Loiret', region: 'Centre-Val de Loire' },
+      '46': { dept: '46 - Lot', region: 'Occitanie' },
+      '47': { dept: '47 - Lot-et-Garonne', region: 'Nouvelle-Aquitaine' },
+      '48': { dept: '48 - Lozère', region: 'Occitanie' },
+      '49': { dept: '49 - Maine-et-Loire', region: 'Pays de la Loire' },
+      '50': { dept: '50 - Manche', region: 'Normandie' },
+      '51': { dept: '51 - Marne', region: 'Grand Est' },
+      '52': { dept: '52 - Haute-Marne', region: 'Grand Est' },
+      '53': { dept: '53 - Mayenne', region: 'Pays de la Loire' },
+      '54': { dept: '54 - Meurthe-et-Moselle', region: 'Grand Est' },
+      '55': { dept: '55 - Meuse', region: 'Grand Est' },
+      '56': { dept: '56 - Morbihan', region: 'Bretagne' },
+      '57': { dept: '57 - Moselle', region: 'Grand Est' },
+      '58': { dept: '58 - Nièvre', region: 'Bourgogne-Franche-Comté' },
+      '59': { dept: '59 - Nord', region: 'Hauts-de-France' },
+      '60': { dept: '60 - Oise', region: 'Hauts-de-France' },
+      '61': { dept: '61 - Orne', region: 'Normandie' },
+      '62': { dept: '62 - Pas-de-Calais', region: 'Hauts-de-France' },
+      '63': { dept: '63 - Puy-de-Dôme', region: 'Auvergne-Rhône-Alpes' },
+      '64': { dept: '64 - Pyrénées-Atlantiques', region: 'Nouvelle-Aquitaine' },
+      '65': { dept: '65 - Hautes-Pyrénées', region: 'Occitanie' },
+      '66': { dept: '66 - Pyrénées-Orientales', region: 'Occitanie' },
+      '67': { dept: '67 - Bas-Rhin', region: 'Grand Est' },
+      '68': { dept: '68 - Haut-Rhin', region: 'Grand Est' },
+      '69': { dept: '69 - Rhône', region: 'Auvergne-Rhône-Alpes' },
+      '70': { dept: '70 - Haute-Saône', region: 'Bourgogne-Franche-Comté' },
+      '71': { dept: '71 - Saône-et-Loire', region: 'Bourgogne-Franche-Comté' },
+      '72': { dept: '72 - Sarthe', region: 'Pays de la Loire' },
+      '73': { dept: '73 - Savoie', region: 'Auvergne-Rhône-Alpes' },
+      '74': { dept: '74 - Haute-Savoie', region: 'Auvergne-Rhône-Alpes' },
+      '75': { dept: '75 - Paris', region: 'Île-de-France' },
+      '76': { dept: '76 - Seine-Maritime', region: 'Normandie' },
+      '77': { dept: '77 - Seine-et-Marne', region: 'Île-de-France' },
+      '78': { dept: '78 - Yvelines', region: 'Île-de-France' },
+      '79': { dept: '79 - Deux-Sèvres', region: 'Nouvelle-Aquitaine' },
+      '80': { dept: '80 - Somme', region: 'Hauts-de-France' },
+      '81': { dept: '81 - Tarn', region: 'Occitanie' },
+      '82': { dept: '82 - Tarn-et-Garonne', region: 'Occitanie' },
+      '83': { dept: '83 - Var', region: "Provence-Alpes-Côte d'Azur" },
+      '84': { dept: '84 - Vaucluse', region: "Provence-Alpes-Côte d'Azur" },
+      '85': { dept: '85 - Vendée', region: 'Pays de la Loire' },
+      '86': { dept: '86 - Vienne', region: 'Nouvelle-Aquitaine' },
+      '87': { dept: '87 - Haute-Vienne', region: 'Nouvelle-Aquitaine' },
+      '88': { dept: '88 - Vosges', region: 'Grand Est' },
+      '89': { dept: '89 - Yonne', region: 'Bourgogne-Franche-Comté' },
+      '90': { dept: '90 - Territoire de Belfort', region: 'Bourgogne-Franche-Comté' },
+      '91': { dept: '91 - Essonne', region: 'Île-de-France' },
+      '92': { dept: '92 - Hauts-de-Seine', region: 'Île-de-France' },
+      '93': { dept: '93 - Seine-Saint-Denis', region: 'Île-de-France' },
+      '94': { dept: '94 - Val-de-Marne', region: 'Île-de-France' },
+      '95': { dept: "95 - Val-d'Oise", region: 'Île-de-France' },
+      '971': { dept: '971 - Guadeloupe', region: 'Guadeloupe' },
+      '972': { dept: '972 - Martinique', region: 'Martinique' },
+      '973': { dept: '973 - Guyane', region: 'Guyane' },
+      '974': { dept: '974 - La Réunion', region: 'La Réunion' },
+      '976': { dept: '976 - Mayotte', region: 'Mayotte' }
+    };
+
+    // Résolution Département / Région normalisée
+    function getNormalizedGeo(codePostal, rawDept = '', rawRegion = '') {
+      let code = '';
+      const cp = (codePostal || '').trim();
+      if (cp.length >= 2) {
+        if (cp.startsWith('97')) {
+          code = cp.substring(0, 3);
+        } else if (cp.startsWith('20')) {
+          const num = parseInt(cp, 10);
+          code = (num < 20200) ? '2A' : '2B';
+        } else {
+          code = cp.substring(0, 2);
+        }
+      }
+      if (!code && rawDept) {
+        code = rawDept.split('-')[0].replace(',', '').trim();
+      }
+
+      if (code && DEPT_INFO[code]) {
+        return {
+          departement: DEPT_INFO[code].dept,
+          region: DEPT_INFO[code].region,
+          codeDept: code
+        };
+      }
+      return {
+        departement: rawDept || 'Non spécifié',
+        region: rawRegion || 'Non spécifiée',
+        codeDept: code
+      };
+    }
+
+    // Configuration des sources CSV Grist
+    const CSV_URLS = {
+      formations: [
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?tableId=OFFRE_FORMATIONS',
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?viewSection=1&tableId=OFFRE_FORMATIONS'
+      ],
+      entreprises: [
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?tableId=Acteurs_CDV_Batterie',
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?viewSection=7&tableId=Acteurs_CDV_Batterie'
+      ]
+    };
+
+    // État global de l'application
+    const state = {
+      rawFormations: [],
+      rawEntreprises: [],
+      filteredFormations: [],
+      filteredEntreprises: [],
+      filters: {
+        formationText: '',
+        formationNiveaux: [],
+        formationDiplome: '',
+        formationMetier: '',
+        formationModalites: [],
+        entrepriseText: '',
+        entrepriseSegment: '',
+        entrepriseMaillon: '',
+        geoRegion: '',
+        geoDept: ''
+      },
+      layersVisible: {
+        formations: true,
+        entreprises: true
+      },
+      selectedItem: null
+    };
+
+    // Initialisation de la carte Leaflet
+    const map = L.map('map', {
+      center: [46.85, 2.35],
+      zoom: 6,
+      zoomControl: false
+    });
+
+    // Contrôles de zoom repositionnés
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Définition des Fonds de Carte (OpenStreetMap par défaut)
+    const baseLayers = {
+      "OpenStreetMap France": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }),
+      "Plan IGN": L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.ign.fr/">IGN</a> - Plan IGN'
+      }),
+      "Photographies aériennes (IGN)": L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.ign.fr/">IGN</a> - BD ORTHO'
+      }),
+      "Positron (Fond clair)": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        attribution: '© CartoDB'
+      })
+    };
+
+    // Activer OpenStreetMap France par défaut comme demandé
+    baseLayers["OpenStreetMap France"].addTo(map);
+    L.control.layers(baseLayers, null, { position: 'topright', collapsed: true }).addTo(map);
+
+    // Groupes de clusters distincts (style uMap)
+    const clusterFormations = L.markerClusterGroup({
+      showCoverageOnHover: true,
+      spiderfyOnMaxZoom: true,
+      maxClusterRadius: 45,
+      iconCreateFunction: function (cluster) {
+        const count = cluster.getChildCount();
+        let sizeClass = 'cluster-formation-small';
+        if (count > 20) sizeClass = 'cluster-formation-medium';
+        if (count > 50) sizeClass = 'cluster-formation-large';
+        return L.divIcon({
+          html: `<span>${count}</span>`,
+          className: `custom-cluster ${sizeClass}`,
+          iconSize: L.point(40, 40)
+        });
+      }
+    });
+
+    const clusterEntreprises = L.markerClusterGroup({
+      showCoverageOnHover: true,
+      spiderfyOnMaxZoom: true,
+      maxClusterRadius: 45,
+      iconCreateFunction: function (cluster) {
+        const count = cluster.getChildCount();
+        let sizeClass = 'cluster-entreprise-small';
+        if (count > 10) sizeClass = 'cluster-entreprise-medium';
+        if (count > 30) sizeClass = 'cluster-entreprise-large';
+        return L.divIcon({
+          html: `<span>${count}</span>`,
+          className: `custom-cluster ${sizeClass}`,
+          iconSize: L.point(40, 40)
+        });
+      }
+    });
+
+    map.addLayer(clusterFormations);
+    map.addLayer(clusterEntreprises);
+
+    function createFormationMarkerIcon() {
+      return L.divIcon({
+        className: 'custom-marker-wrapper',
+        html: `<div class="custom-marker-pin formation-pin" title="Offre de formation"><i class="ri-graduation-cap-fill"></i></div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -28]
+      });
+    }
+
+    function createEntrepriseMarkerIcon() {
+      return L.divIcon({
+        className: 'custom-marker-wrapper',
+        html: `<div class="custom-marker-pin entreprise-pin" title="Acteur de la chaîne de valeur"><i class="ri-building-4-fill"></i></div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -28]
+      });
+    }
+
+    // Téléchargement sécurisé avec fallback d'URL
+    async function fetchCsvWithFallback(urls) {
+      let lastError = null;
+      for (const url of urls) {
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) continue;
+          const text = await resp.text();
+          const lines = text.trim().split('\n');
+          if (lines.length > 5) return text;
+        } catch (e) {
+          lastError = e;
+        }
+      }
+      throw lastError || new Error('Impossible de charger les données CSV.');
+    }
+
+    // Chargement des données CSV via PapaParse
+    async function loadData() {
+      try {
+        const [resFormations, resEntreprises] = await Promise.all([
+          fetchCsvWithFallback(CSV_URLS.formations),
+          fetchCsvWithFallback(CSV_URLS.entreprises)
+        ]);
+
+        // Parse Formations
+        const parsedForm = Papa.parse(resFormations, { header: true, skipEmptyLines: true });
+        state.rawFormations = (parsedForm.data || []).filter(r => {
+          const lat = parseFloat((r['Latitude'] || '').toString().replace(',', '.'));
+          const lon = parseFloat((r['Longitude'] || '').toString().replace(',', '.'));
+          return !isNaN(lat) && !isNaN(lon) && lat !== 0;
+        }).map((r, idx) => {
+          const cp = (r['Code Postal'] || '').toString().trim();
+          const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          return {
+            id: 'form_' + idx,
+            type: 'formation',
+            typeDiplome: r['Type diplôme'] || r['Type diplome'] || '',
+            intitule: r['Intitulé'] || r['Intitule'] || '',
+            acronyme: r['Acronyme'] || '',
+            niveau: (r['Niveau'] || '').toString().trim(),
+            metier: r['Métier'] || r['Metier'] || '',
+            typeFormation: r['Type de formation'] || '',
+            etablissement: r['Etablissement'] || '',
+            adresse: r['Adresse'] || '',
+            ville: r['Ville'] || '',
+            codePostal: cp,
+            departement: geo.departement,
+            region: geo.region,
+            lat: parseFloat((r['Latitude'] || '').toString().replace(',', '.')),
+            lon: parseFloat((r['Longitude'] || '').toString().replace(',', '.')),
+            codeRNCP: r['Code RNCP'] || '',
+            lienFranceCompetences: r['Lien France Compétences'] || r['Lien France Competences'] || '',
+            siteWebEtablissement: r['Site_web_etablissement'] || r['Site web établissement'] || r['Site web etablissement'] || ''
+          };
+        });
+
+        // Parse Entreprises
+        const parsedEnt = Papa.parse(resEntreprises, { header: true, skipEmptyLines: true });
+        state.rawEntreprises = (parsedEnt.data || []).filter(r => {
+          const lat = parseFloat((r['Latitude'] || '').toString().replace(',', '.'));
+          const lon = parseFloat((r['Longitude'] || '').toString().replace(',', '.'));
+          return !isNaN(lat) && !isNaN(lon) && lat !== 0;
+        }).map((r, idx) => {
+          const cp = (r['Code Postal'] || '').toString().trim();
+          const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          return {
+            id: 'ent_' + idx,
+            type: 'entreprise',
+            entreprise: r["Nom de l'entreprise"] || '',
+            site: r['Nom du site / Établissement'] || r['Nom du site / Etablissement'] || '',
+            typeSite: r['Type de site'] || '',
+            statutSite: (r['Statut du site'] || '').toString().trim(),
+            siret: r['SIRET'] || '',
+            siren: r['SIREN'] || '',
+            adresse: r['Adresse (N° et Voie)'] || r['Adresse'] || '',
+            codePostal: cp,
+            ville: r['Ville'] || '',
+            departement: geo.departement,
+            region: geo.region,
+            lat: parseFloat((r['Latitude'] || '').toString().replace(',', '.')),
+            lon: parseFloat((r['Longitude'] || '').toString().replace(',', '.')),
+            typologie: r["Typologie d'acteur"] || '',
+            produits: r['Produits / solutions'] || '',
+            descriptif: r['Descriptif activité batterie'] || r['Descriptif activite batterie'] || '',
+            amiCma: r['Lien Partenariat AMI-CMA / Écosystème'] || r['Lien Partenariat AMI-CMA / Ecosysteme'] || '',
+            siteWeb: r['Site Web'] || '',
+            maillonCDV: r['Maillon CDV'] || '',
+            segmentCDV: r['Segment CDV'] || r['Segment CDV Batterie'] || ''
+          };
+        });
+
+        // Initialisation des listes déroulantes de filtres
+        populateFilterDropdowns();
+
+        // Application initiale des filtres et affichage
+        applyFilters();
+
+        // Cacher l'overlay de chargement
+        document.getElementById('loading-overlay').style.display = 'none';
+
+      } catch (err) {
+        console.error('Erreur lors du chargement des données:', err);
+        document.getElementById('loading-overlay').innerHTML = `
+          <div style="color: var(--red-marianne-425); font-weight: 700; font-size: 1.1rem;">
+            <i class="ri-error-warning-line"></i> Échec du chargement des données Grist
+          </div>
+          <p style="font-size: 0.85rem; color: var(--grey-400);">${err.message}</p>
+          <button class="fr-btn fr-btn--primary" onclick="location.reload()">Réessayer</button>
+        `;
+      }
+    }
+
+    // Remplissage dynamique des listes déroulantes de filtres
+    function populateFilterDropdowns() {
+      // 1. Diplômes
+      const diplomes = Array.from(new Set(state.rawFormations.map(f => f.typeDiplome).filter(Boolean))).sort();
+      const selectDiplome = document.getElementById('filter-formation-diplome');
+      diplomes.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        selectDiplome.appendChild(opt);
+      });
+
+      // 2. Métiers
+      const metiersSet = new Set();
+      state.rawFormations.forEach(f => {
+        if (f.metier) {
+          f.metier.split(',').forEach(m => metiersSet.add(m.trim()));
+        }
+      });
+      const selectMetier = document.getElementById('filter-formation-metier');
+      Array.from(metiersSet).sort().forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        selectMetier.appendChild(opt);
+      });
+
+      // 3. Segments CDV
+      const segments = Array.from(new Set(state.rawEntreprises.map(e => e.segmentCDV).filter(Boolean))).sort();
+      const selectSegment = document.getElementById('filter-entreprise-segment');
+      segments.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        selectSegment.appendChild(opt);
+      });
+
+      // 4. Maillons CDV
+      const maillons = Array.from(new Set(state.rawEntreprises.map(e => e.maillonCDV).filter(Boolean))).sort();
+      const selectMaillon = document.getElementById('filter-entreprise-maillon');
+      maillons.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        selectMaillon.appendChild(opt);
+      });
+
+      // 5. Régions & Départements transverses synchronisés
+      updateGeoDropdowns();
+    }
+
+    // Mise à jour des listes déroulantes Régions et Départements (synchronisées sur les 2 onglets)
+    function updateGeoDropdowns() {
+      const allItems = [...state.rawFormations, ...state.rawEntreprises];
+      const regionsSet = new Set();
+      const deptsSet = new Set();
+
+      allItems.forEach(item => {
+        if (item.region && item.region !== 'Non spécifiée') regionsSet.add(item.region);
+        if (item.departement && item.departement !== 'Non spécifié') {
+          if (!state.filters.geoRegion || item.region === state.filters.geoRegion) {
+            deptsSet.add(item.departement);
+          }
+        }
+      });
+
+      const sortedRegions = Array.from(regionsSet).sort();
+      const sortedDepts = Array.from(deptsSet).sort();
+      const dict = I18N[currentLang] || I18N.fr;
+
+      // Mise à jour des 2 selects Région
+      document.querySelectorAll('.geo-region-select').forEach(sel => {
+        sel.innerHTML = `<option value="">${dict.all_regions}</option>`;
+        sortedRegions.forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r;
+          opt.textContent = r;
+          if (r === state.filters.geoRegion) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      });
+
+      // Mise à jour des 2 selects Département
+      document.querySelectorAll('.geo-dept-select').forEach(sel => {
+        sel.innerHTML = `<option value="">${dict.all_depts}</option>`;
+        sortedDepts.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = d;
+          if (d === state.filters.geoDept) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    // Application des filtres et mise à jour de la carte
+    function applyFilters() {
+      // 1. Filtrer Formations
+      state.filteredFormations = state.rawFormations.filter(f => {
+        if (state.filters.geoRegion && f.region !== state.filters.geoRegion) {
+          return false;
+        }
+
+        if (state.filters.geoDept && f.departement !== state.filters.geoDept) {
+          return false;
+        }
+
+        if (state.filters.formationText) {
+          const q = state.filters.formationText.toLowerCase();
+          const match = (f.intitule && f.intitule.toLowerCase().includes(q)) ||
+                        (f.etablissement && f.etablissement.toLowerCase().includes(q)) ||
+                        (f.ville && f.ville.toLowerCase().includes(q)) ||
+                        (f.codeRNCP && f.codeRNCP.toLowerCase().includes(q)) ||
+                        (f.acronyme && f.acronyme.toLowerCase().includes(q));
+          if (!match) return false;
+        }
+
+        if (state.filters.formationNiveaux.length > 0) {
+          if (!state.filters.formationNiveaux.includes(f.niveau)) return false;
+        }
+
+        if (state.filters.formationDiplome && f.typeDiplome !== state.filters.formationDiplome) {
+          return false;
+        }
+
+        if (state.filters.formationMetier && (!f.metier || !f.metier.includes(state.filters.formationMetier))) {
+          return false;
+        }
+
+        if (state.filters.formationModalites.length > 0) {
+          const modStr = (f.typeFormation || '').toLowerCase();
+          const matchMod = state.filters.formationModalites.some(m => modStr.includes(m));
+          if (!matchMod) return false;
+        }
+
+        return true;
+      });
+
+      // 2. Filtrer Entreprises
+      state.filteredEntreprises = state.rawEntreprises.filter(e => {
+        if (state.filters.geoRegion && e.region !== state.filters.geoRegion) {
+          return false;
+        }
+
+        if (state.filters.geoDept && e.departement !== state.filters.geoDept) {
+          return false;
+        }
+
+        if (state.filters.entrepriseText) {
+          const q = state.filters.entrepriseText.toLowerCase();
+          const match = (e.entreprise && e.entreprise.toLowerCase().includes(q)) ||
+                        (e.site && e.site.toLowerCase().includes(q)) ||
+                        (e.produits && e.produits.toLowerCase().includes(q)) ||
+                        (e.descriptif && e.descriptif.toLowerCase().includes(q)) ||
+                        (e.ville && e.ville.toLowerCase().includes(q)) ||
+                        (e.typologie && e.typologie.toLowerCase().includes(q));
+          if (!match) return false;
+        }
+
+        if (state.filters.entrepriseSegment && e.segmentCDV !== state.filters.entrepriseSegment) {
+          return false;
+        }
+
+        if (state.filters.entrepriseMaillon && e.maillonCDV !== state.filters.entrepriseMaillon) {
+          return false;
+        }
+
+        return true;
+      });
+
+      updateCounts();
+      renderMarkers();
+    }
+
+    // Mise à jour des compteurs et badges
+    function updateCounts() {
+      const fCount = state.filteredFormations.length;
+      const fTotal = state.rawFormations.length;
+      const eCount = state.filteredEntreprises.length;
+      const eTotal = state.rawEntreprises.length;
+      const dict = I18N[currentLang] || I18N.fr;
+
+      document.getElementById('badge-count-formations').textContent = `${fCount} / ${fTotal}`;
+      document.getElementById('badge-count-entreprises').textContent = `${eCount} / ${eTotal}`;
+
+      const formationCountInfo = state.layersVisible.formations
+        ? `${fCount} ${dict.visible_formations}`
+        : dict.layer_hidden;
+      const entrepriseCountInfo = state.layersVisible.entreprises
+        ? `${eCount} ${dict.visible_entreprises}`
+        : dict.layer_hidden;
+
+      const fTabEntCount = document.getElementById('formation-tab-entreprise-count');
+      if (fTabEntCount) fTabEntCount.textContent = entrepriseCountInfo;
+
+      const eTabFormCount = document.getElementById('entreprise-tab-formation-count');
+      if (eTabFormCount) eTabFormCount.textContent = formationCountInfo;
+    }
+
+    // Réinitialisation du filtre géographique uniquement
+    window.clearGeoFilter = function() {
+      state.filters.geoRegion = '';
+      state.filters.geoDept = '';
+      updateGeoDropdowns();
+      applyFilters();
+    };
+
+    // Rendu des marqueurs et clusters Leaflet
+    function renderMarkers() {
+      clusterFormations.clearLayers();
+      clusterEntreprises.clearLayers();
+
+      if (state.layersVisible.formations) {
+        const formationMarkers = state.filteredFormations.map(f => {
+          const marker = L.marker([f.lat, f.lon], { icon: createFormationMarkerIcon() });
+          
+          const popupHtml = `
+            <div class="mini-popup-content" onclick="openDetailView('${f.id}')">
+              <div class="mini-popup-header" style="color: var(--green-formation-dark);">${escapeHtml(f.intitule || f.typeDiplome)}</div>
+              <div class="mini-popup-sub"><i class="ri-building-line"></i> ${escapeHtml(f.etablissement)}</div>
+              <div class="mini-popup-geo"><i class="ri-map-pin-line"></i> ${escapeHtml(f.ville)} (${escapeHtml(f.departement)})</div>
+            </div>
+          `;
+          marker.bindPopup(popupHtml);
+
+          marker.on('click', () => {
+            openDetailView(f.id);
+          });
+
+          return marker;
+        });
+        clusterFormations.addLayers(formationMarkers);
+      }
+
+      if (state.layersVisible.entreprises) {
+        const entrepriseMarkers = state.filteredEntreprises.map(e => {
+          const marker = L.marker([e.lat, e.lon], { icon: createEntrepriseMarkerIcon() });
+          
+          const popupHtml = `
+            <div class="mini-popup-content" onclick="openDetailView('${e.id}')">
+              <div class="mini-popup-header" style="color: var(--blue-entreprise-dark);">${escapeHtml(e.entreprise)}</div>
+              <div class="mini-popup-sub"><i class="ri-node-tree"></i> ${escapeHtml(e.segmentCDV || e.typologie || 'Acteur')}</div>
+              <div class="mini-popup-geo"><i class="ri-map-pin-line"></i> ${escapeHtml(e.site || e.ville)} (${escapeHtml(e.departement)})</div>
+            </div>
+          `;
+          marker.bindPopup(popupHtml);
+
+          marker.on('click', () => {
+            openDetailView(e.id);
+          });
+
+          return marker;
+        });
+        clusterEntreprises.addLayers(entrepriseMarkers);
+      }
+    }
+
+    // Ouverture et affichage de la fiche dans l'Offcanvas latéral
+    window.openDetailView = function(id) {
+      const isFormation = id.startsWith('form_');
+      const item = isFormation 
+        ? state.rawFormations.find(f => f.id === id)
+        : state.rawEntreprises.find(e => e.id === id);
+
+      if (!item) return;
+      state.selectedItem = item;
+
+      const offcanvas = document.getElementById('offcanvas');
+      const badge = document.getElementById('offcanvas-badge');
+      const title = document.getElementById('offcanvas-title');
+      const subtitle = document.getElementById('offcanvas-subtitle');
+      const body = document.getElementById('offcanvas-body');
+      const dict = I18N[currentLang] || I18N.fr;
+
+      if (isFormation) {
+        badge.className = 'offcanvas-type-badge badge-formation-theme';
+        badge.innerHTML = `<i class="ri-graduation-cap-line"></i> ${dict.badge_form}`;
+        title.textContent = item.intitule || item.typeDiplome || dict.badge_form;
+        subtitle.textContent = `${item.etablissement} — ${item.ville} (${item.departement})`;
+
+        body.innerHTML = `
+          <!-- Section 1 : Caractéristiques du diplôme -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-award-line"></i> ${dict.sec_diploma_features}</div>
+            <div class="detail-grid">
+              <div class="detail-card green-accent">
+                <div class="detail-card-label">${dict.label_diploma_type}</div>
+                <div class="detail-card-val">${escapeHtml(item.typeDiplome || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card green-accent">
+                <div class="detail-card-label">${dict.label_rncp_level}</div>
+                <div class="detail-card-val">Niveau ${escapeHtml(item.niveau || 'N/A')}</div>
+              </div>
+              <div class="detail-card green-accent">
+                <div class="detail-card-label">${dict.label_acronym}</div>
+                <div class="detail-card-val">${escapeHtml(item.acronyme || '-')}</div>
+              </div>
+              <div class="detail-card green-accent">
+                <div class="detail-card-label">${dict.label_rncp_code}</div>
+                <div class="detail-card-val">${escapeHtml(item.codeRNCP || '-')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2 : Métiers et Modalités -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-tools-line"></i> ${dict.sec_job_modalities}</div>
+            <div class="detail-grid">
+              <div class="detail-card">
+                <div class="detail-card-label">${dict.label_job_domain}</div>
+                <div class="detail-card-val">${escapeHtml(item.metier || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-card-label">${dict.label_teaching_type}</div>
+                <div class="detail-card-val">${escapeHtml(item.typeFormation || dict.unspecified)}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3 : Établissement & Localisation -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-map-pin-2-line"></i> ${dict.sec_institution_location}</div>
+            <div class="detail-text-block">
+              <strong>${escapeHtml(item.etablissement)}</strong><br>
+              ${escapeHtml(item.adresse)}<br>
+              ${escapeHtml(item.codePostal)} ${escapeHtml(item.ville)}<br>
+              <span style="font-size: 0.75rem; color: var(--grey-400);">${escapeHtml(item.departement)} — ${escapeHtml(item.region)}</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="offcanvas-actions">
+            ${item.lienFranceCompetences ? `
+              <a href="${encodeURI(item.lienFranceCompetences)}" target="_blank" rel="noopener noreferrer" class="fr-btn fr-btn--primary">
+                <i class="ri-external-link-line"></i> ${dict.btn_france_competences}
+              </a>
+            ` : ''}
+            ${item.siteWebEtablissement ? `
+              <a href="${encodeURI(item.siteWebEtablissement)}" target="_blank" rel="noopener noreferrer" class="fr-btn fr-btn--green">
+                <i class="ri-global-line"></i> ${dict.btn_school_site}
+              </a>
+            ` : ''}
+            <button class="fr-btn fr-btn--secondary" onclick="centerMapOn(${item.lat}, ${item.lon})">
+              <i class="ri-focus-3-line"></i> ${dict.btn_center_map}
+            </button>
+          </div>
+        `;
+      } else {
+        badge.className = 'offcanvas-type-badge badge-entreprise-theme';
+        badge.innerHTML = `<i class="ri-building-line"></i> ${dict.badge_ent}`;
+        title.textContent = item.entreprise || 'Entreprise';
+        subtitle.textContent = `${item.site || 'Site'} — ${item.ville} (${item.departement})`;
+
+        body.innerHTML = `
+          <!-- Section 1 : Chaîne de Valeur Batterie -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-node-tree"></i> ${dict.sec_cdv}</div>
+            <div class="detail-grid">
+              <div class="detail-card blue-accent" style="grid-column: 1 / -1;">
+                <div class="detail-card-label">${dict.label_cdv_segment}</div>
+                <div class="detail-card-val">${escapeHtml(item.segmentCDV || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card blue-accent" style="grid-column: 1 / -1;">
+                <div class="detail-card-label">${dict.label_cdv_link}</div>
+                <div class="detail-card-val">${escapeHtml(item.maillonCDV || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-card-label">${dict.label_site_status}</div>
+                <div class="detail-card-val">${escapeHtml(item.statutSite || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-card-label">${dict.label_actor_type}</div>
+                <div class="detail-card-val">${escapeHtml(item.typologie || '-')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2 : Produits & Activité détaillée -->
+          ${item.produits ? `
+            <div class="detail-section">
+              <div class="detail-section-title"><i class="ri-box-3-line"></i> ${dict.sec_products}</div>
+              <div class="detail-text-block">${escapeHtml(item.produits)}</div>
+            </div>
+          ` : ''}
+
+          ${item.descriptif ? `
+            <div class="detail-section">
+              <div class="detail-section-title"><i class="ri-file-text-line"></i> ${dict.sec_activity_desc}</div>
+              <div class="detail-text-block">${escapeHtml(item.descriptif)}</div>
+            </div>
+          ` : ''}
+
+          <!-- Section 3 : Écosystème & Partenariats -->
+          ${item.amiCma ? `
+            <div class="detail-section">
+              <div class="detail-section-title"><i class="ri-shake-hands-line"></i> ${dict.sec_partnerships}</div>
+              <div class="detail-text-block"><strong>${escapeHtml(item.amiCma)}</strong></div>
+            </div>
+          ` : ''}
+
+          <!-- Section 4 : Localisation & Identifiants -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-map-pin-2-line"></i> ${dict.sec_location_siret}</div>
+            <div class="detail-text-block">
+              <strong>${escapeHtml(item.site || item.entreprise)}</strong><br>
+              ${escapeHtml(item.adresse)}<br>
+              ${escapeHtml(item.codePostal)} ${escapeHtml(item.ville)}<br>
+              <span style="font-size: 0.75rem; color: var(--grey-400);">${escapeHtml(item.departement)} — ${escapeHtml(item.region)}</span><br>
+              ${item.siret ? `<span style="font-size: 0.75rem; color: var(--grey-400);">SIRET: ${escapeHtml(item.siret)}</span>` : ''}
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="offcanvas-actions">
+            ${item.siteWeb ? `
+              <a href="${encodeURI(item.siteWeb)}" target="_blank" rel="noopener noreferrer" class="fr-btn fr-btn--primary">
+                <i class="ri-global-line"></i> ${dict.btn_official_site}
+              </a>
+            ` : ''}
+            <button class="fr-btn fr-btn--secondary" onclick="centerMapOn(${item.lat}, ${item.lon})">
+              <i class="ri-focus-3-line"></i> ${dict.btn_center_map}
+            </button>
+          </div>
+        `;
+      }
+
+      offcanvas.classList.add('open');
+      offcanvas.setAttribute('aria-hidden', 'false');
+    };
+
+    // Centrage de la carte
+    window.centerMapOn = function(lat, lon) {
+      map.setView([lat, lon], 14, { animate: true });
+    };
+
+    // Fermeture de l'Offcanvas
+    document.getElementById('offcanvas-close-btn').addEventListener('click', () => {
+      const offcanvas = document.getElementById('offcanvas');
+      offcanvas.classList.remove('open');
+      offcanvas.setAttribute('aria-hidden', 'true');
+    });
+
+    // Gestion de la sidebar rétractable
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+
+    sidebarToggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      sidebarToggleIcon.className = isCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line';
+      setTimeout(() => map.invalidateSize(), 350);
+    });
+
+    // Bascule des 2 onglets de la sidebar
+    const tabs = document.querySelectorAll('.filter-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const targetId = tab.getAttribute('data-tab');
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+
+    // Synchronisation des selects Région
+    document.querySelectorAll('.geo-region-select').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        state.filters.geoRegion = e.target.value;
+        state.filters.geoDept = '';
+        updateGeoDropdowns();
+        applyFilters();
+      });
+    });
+
+    // Synchronisation des selects Département
+    document.querySelectorAll('.geo-dept-select').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        state.filters.geoDept = e.target.value;
+        document.querySelectorAll('.geo-dept-select').forEach(otherSel => {
+          otherSel.value = e.target.value;
+        });
+        applyFilters();
+      });
+    });
+
+    // Écouteurs d'événements pour les Filtres Formations
+    document.getElementById('search-formation').addEventListener('input', (e) => {
+      state.filters.formationText = e.target.value;
+      applyFilters();
+    });
+
+    document.querySelectorAll('#filter-formation-niveau input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        state.filters.formationNiveaux = Array.from(
+          document.querySelectorAll('#filter-formation-niveau input[type="checkbox"]:checked')
+        ).map(c => c.value);
+        applyFilters();
+      });
+    });
+
+    document.getElementById('filter-formation-diplome').addEventListener('change', (e) => {
+      state.filters.formationDiplome = e.target.value;
+      applyFilters();
+    });
+
+    document.getElementById('filter-formation-metier').addEventListener('change', (e) => {
+      state.filters.formationMetier = e.target.value;
+      applyFilters();
+    });
+
+    document.querySelectorAll('#filter-formation-modalite input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        state.filters.formationModalites = Array.from(
+          document.querySelectorAll('#filter-formation-modalite input[type="checkbox"]:checked')
+        ).map(c => c.value);
+        applyFilters();
+      });
+    });
+
+    // Écouteurs d'événements pour les Filtres Entreprises
+    document.getElementById('search-entreprise').addEventListener('input', (e) => {
+      state.filters.entrepriseText = e.target.value;
+      applyFilters();
+    });
+
+    document.getElementById('filter-entreprise-segment').addEventListener('change', (e) => {
+      state.filters.entrepriseSegment = e.target.value;
+      applyFilters();
+    });
+
+    document.getElementById('filter-entreprise-maillon').addEventListener('change', (e) => {
+      state.filters.entrepriseMaillon = e.target.value;
+      applyFilters();
+    });
+
+    // Toggle croisé : Depuis l'onglet Formations, masquer/afficher les Entreprises
+    const toggleEntrepriseFromFormations = document.getElementById('toggle-layer-entreprise-from-formations');
+    toggleEntrepriseFromFormations.addEventListener('change', (e) => {
+      state.layersVisible.entreprises = e.target.checked;
+      renderMarkers();
+      updateCounts();
+    });
+
+    // Toggle croisé : Depuis l'onglet Entreprises, masquer/afficher les Formations
+    const toggleFormationFromEntreprises = document.getElementById('toggle-layer-formation-from-entreprises');
+    toggleFormationFromEntreprises.addEventListener('change', (e) => {
+      state.layersVisible.formations = e.target.checked;
+      renderMarkers();
+      updateCounts();
+    });
+
+    // Réinitialisation de tous les filtres
+    document.getElementById('btn-reset-all').addEventListener('click', () => {
+      state.filters = {
+        formationText: '',
+        formationNiveaux: [],
+        formationDiplome: '',
+        formationMetier: '',
+        formationModalites: [],
+        entrepriseText: '',
+        entrepriseSegment: '',
+        entrepriseMaillon: '',
+        geoRegion: '',
+        geoDept: ''
+      };
+
+      state.layersVisible.formations = true;
+      state.layersVisible.entreprises = true;
+      toggleEntrepriseFromFormations.checked = true;
+      toggleFormationFromEntreprises.checked = true;
+
+      document.getElementById('search-formation').value = '';
+      document.querySelectorAll('#filter-formation-niveau input[type="checkbox"]').forEach(c => c.checked = false);
+      document.getElementById('filter-formation-diplome').value = '';
+      document.getElementById('filter-formation-metier').value = '';
+      document.querySelectorAll('#filter-formation-modalite input[type="checkbox"]').forEach(c => c.checked = false);
+
+      document.getElementById('search-entreprise').value = '';
+      document.getElementById('filter-entreprise-segment').value = '';
+      document.getElementById('filter-entreprise-maillon').value = '';
+
+      updateGeoDropdowns();
+
+      map.setView([46.85, 2.35], 6);
+
+      applyFilters();
+    });
+
+    // Recherche d'adresse via l'API Adresse officielle BAN
+    const addressInput = document.getElementById('address-search-input');
+    const addressResults = document.getElementById('address-results');
+    const addressSpinner = document.getElementById('address-spinner');
+    let debounceTimer = null;
+    let searchMarker = null;
+
+    addressInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      clearTimeout(debounceTimer);
+
+      if (q.length < 3) {
+        addressResults.style.display = 'none';
+        addressResults.innerHTML = '';
+        return;
+      }
+
+      addressSpinner.style.display = 'inline-block';
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=5`);
+          const data = await res.json();
+          addressSpinner.style.display = 'none';
+
+          if (data.features && data.features.length > 0) {
+            addressResults.innerHTML = '';
+            data.features.forEach(f => {
+              const item = document.createElement('div');
+              item.className = 'address-item';
+              item.innerHTML = `
+                <span style="font-weight:600;">${escapeHtml(f.properties.label)}</span>
+                <span style="font-size:0.7rem; color:var(--grey-400);">${escapeHtml(f.properties.context || '')}</span>
+              `;
+              item.addEventListener('click', () => {
+                const [lon, lat] = f.geometry.coordinates;
+                map.setView([lat, lon], 12, { animate: true });
+                
+                if (searchMarker) map.removeLayer(searchMarker);
+                searchMarker = L.circleMarker([lat, lon], {
+                  radius: 8,
+                  fillColor: '#e1000f',
+                  color: '#ffffff',
+                  weight: 2,
+                  fillOpacity: 0.9
+                }).addTo(map).bindPopup(`<strong>${escapeHtml(f.properties.label)}</strong>`).openPopup();
+
+                addressResults.style.display = 'none';
+                addressInput.value = f.properties.label;
+              });
+              addressResults.appendChild(item);
+            });
+            addressResults.style.display = 'block';
+          } else {
+            addressResults.style.display = 'none';
+          }
+        } catch (err) {
+          addressSpinner.style.display = 'none';
+          console.error('Erreur API Adresse:', err);
+        }
+      }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.map-floating-search')) {
+        addressResults.style.display = 'none';
+      }
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadData();
+    });
+  </script>
+</body>
+</html>
