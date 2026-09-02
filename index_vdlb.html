@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="vldb-formations">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Vallée de la Batterie - Carte Interactive des Formations & Entreprises</title>
+  
+  <!-- Favicon Batterie Haute Définition (SVG autonome & Fallback Emoji Batterie) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='7' width='24' height='18' rx='4' fill='%230050A4'/%3E%3Crect x='27' y='11' width='3.5' height='10' rx='1.5' fill='%230050A4'/%3E%3Crect x='4.5' y='9.5' width='14' height='13' rx='2.5' fill='%238DC63F'/%3E%3Cpath d='M16 8.5L9.5 17H15L13.5 23.5L21 15H15.5L16 8.5Z' fill='%23FF9900' stroke='%23ffffff' stroke-width='0.75'/%3E%3C/svg%3E">
+  <link rel="alternate icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔋%3C/text%3E%3C/svg%3E">
+
+  <!-- Polices Poppins & Inter (Charte Vallée de la Batterie) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Remix Icons pour l'iconographie moderne -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
+
+  <!-- Leaflet & MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+
+  <!-- Feuille de styles Charte Graphique "Vallée de la Batterie - Formations" (Vert & Beige) -->
+  <style>
+    :root {
+      /* Palette Formations & Écosystème Vallée de la Batterie (Verts & Beiges officiels) */
+      --vldb-beige-bg: #FBF8F2;         /* Fond général beige sable doux */
+      --vldb-beige-surface: #FFF9F0;    /* Fond de surface écru lumineux */
+      --vldb-beige-card: #FFF5E6;       /* Fond cartes & modules beige crème (bg-orange-50 officiel) */
+      --vldb-beige-accent: #FFEBB3;     /* Beige doré / sable doux */
+      --vldb-beige-border: #EADBCE;     /* Lignes et séparateurs beiges */
+
+      --vldb-green-main: #75A434;       /* Vert électromobilité soutenu */
+      --vldb-green-bright: #8DC63F;     /* Vert pomme vif VLDB */
+      --vldb-green-dark: #004021;       /* Vert forêt profond (texte & accent) */
+      --vldb-green-light: #CCE3AD;      /* Vert tendre */
+      --vldb-green-soft: #E2EED3;       /* Fond vert pastel très doux (bg-secondary-100 officiel) */
+
+      --vldb-blue-primary: #0050A4;     /* Bleu Cobalt (pour volet entreprises) */
+      --vldb-blue-dark: #002144;
+      --vldb-blue-soft: #E8F1FA;
+      --vldb-blue-light: #C6D6E7;
+
+      --vldb-orange-accent: #FF9900;    /* Orange Énergie VLDB */
+      --vldb-orange-hover: #D07D02;
+      --vldb-orange-soft: #FFF3DE;
+
+      --vldb-text-main: #303336;        /* Gris anthracite profond */
+      --vldb-text-muted: #747C84;       /* Gris moyen pour sous-titres */
+      --white: #FFFFFF;
+
+      --shadow-sm: 0 2px 6px rgba(48, 51, 54, 0.05);
+      --shadow-md: 0 4px 18px rgba(48, 51, 54, 0.08);
+      --shadow-lg: 0 12px 36px rgba(48, 51, 54, 0.12);
+      --radius-pill: 32px;
+      --radius-card: 16px;
+      --radius-input: 10px;
+      --font-vldb: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-vldb);
+      color: var(--vldb-text-main);
+      background-color: var(--vldb-beige-bg);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* En-tête officiel Vallée de la Batterie - Teintes Vert & Beige */
+    .vldb-header {
+      background-color: var(--vldb-beige-surface);
+      border-bottom: 2px solid var(--vldb-green-main);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(117, 164, 52, 0.1);
+    }
+
+    .vldb-header__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .vldb-header__logo-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--vldb-green-main) 0%, var(--vldb-green-dark) 100%);
+      color: var(--vldb-orange-accent);
+      font-size: 1.5rem;
+      box-shadow: 0 4px 12px rgba(117, 164, 52, 0.3);
+    }
+
+    .vldb-header__title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vldb-header__title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--vldb-green-dark);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .vldb-header__title span.highlight-orange {
+      color: var(--vldb-orange-accent);
+    }
+
+    .vldb-header__title span.highlight-green {
+      color: var(--vldb-green-main);
+    }
+
+    .vldb-header__subtitle {
+      font-size: 0.8rem;
+      color: var(--vldb-text-muted);
+      font-weight: 500;
+    }
+
+    .vldb-header__tools {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .nav-switch-btn:hover {
+      background-color: var(--vldb-green-main);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(117, 164, 52, 0.3);
+    }
+
+    /* Sélecteur de langue VLDB (Pill switch aux tons beige/vert) */
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background-color: var(--vldb-beige-card);
+      border: 1px solid var(--vldb-beige-border);
+      border-radius: var(--radius-pill);
+      padding: 0.2rem 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .lang-switcher i {
+      color: var(--vldb-green-main);
+      font-size: 0.95rem;
+      margin-left: 0.2rem;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--vldb-text-muted);
+      font-weight: 600;
+      font-size: 0.76rem;
+      cursor: pointer;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-pill);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .lang-btn:hover {
+      color: var(--vldb-green-dark);
+    }
+
+    .lang-btn.active {
+      color: var(--white);
+      font-weight: 700;
+      background-color: var(--vldb-green-main);
+      box-shadow: 0 2px 6px rgba(117, 164, 52, 0.3);
+    }
+
+    .lang-divider {
+      color: var(--vldb-beige-border);
+      font-size: 0.7rem;
+      user-select: none;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      background: var(--vldb-green-soft);
+      color: var(--vldb-green-dark);
+      border: 1px solid var(--vldb-green-light);
+    }
+
+    .status-badge.live::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background-color: var(--vldb-green-bright);
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 3px rgba(141, 198, 63, 0.4);
+    }
+
+    /* Masquage des bannières Google Translate par défaut */
+    .goog-te-banner-frame { display: none !important; }
+    body { top: 0px !important; }
+    #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+    .goog-text-highlight { background: none !important; box-shadow: none !important; }
+
+    /* Layout principal */
+    .app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Sidebar (Filtres) style VLDB Teintes Vert & Beige */
+    .sidebar {
+      width: 395px;
+      max-width: 90vw;
+      background-color: var(--vldb-beige-surface);
+      border-right: 1px solid var(--vldb-beige-border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      z-index: 900;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+
+    .sidebar-toggle-btn {
+      position: absolute;
+      top: 1.25rem;
+      left: 100%;
+      z-index: 950;
+      background: linear-gradient(135deg, var(--vldb-green-main) 0%, var(--vldb-green-dark) 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 0 12px 12px 0;
+      padding: 0.7rem 0.6rem;
+      cursor: pointer;
+      box-shadow: 3px 2px 10px rgba(0, 64, 33, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: var(--vldb-orange-accent);
+    }
+
+    .sidebar-header {
+      padding: 1.05rem 1.35rem;
+      border-bottom: 1px solid var(--vldb-beige-border);
+      background-color: var(--vldb-beige-card);
+    }
+
+    .sidebar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--vldb-green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-reset-all {
+      background: none;
+      border: none;
+      color: var(--vldb-green-main);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-reset-all:hover {
+      color: var(--vldb-orange-accent);
+      text-decoration: underline;
+    }
+
+    /* 2 Onglets VLDB - Formations (Vert/Beige) & Entreprises (Cobalt/Beige) */
+    .filter-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--vldb-beige-border);
+      background-color: var(--vldb-beige-surface);
+      padding: 0 0.6rem;
+      gap: 0.5rem;
+    }
+
+    .filter-tab {
+      flex: 1;
+      padding: 0.9rem 0.5rem;
+      text-align: center;
+      font-size: 0.86rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--vldb-text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: inherit;
+    }
+
+    .filter-tab[data-tab="tab-formations"].active {
+      color: var(--vldb-green-dark);
+      border-bottom-color: var(--vldb-green-main);
+      font-weight: 700;
+    }
+
+    .filter-tab[data-tab="tab-entreprises"].active {
+      color: var(--vldb-blue-primary);
+      border-bottom-color: var(--vldb-blue-primary);
+      font-weight: 700;
+    }
+
+    .filter-tab .tab-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.18rem 0.65rem;
+      border-radius: var(--radius-pill);
+      background: var(--vldb-beige-card);
+      color: var(--vldb-text-main);
+      border: 1px solid var(--vldb-beige-border);
+      transition: all 0.2s;
+    }
+
+    .filter-tab[data-tab="tab-formations"].active .tab-badge.badge-formation {
+      background-color: var(--vldb-green-main);
+      border-color: var(--vldb-green-main);
+      color: var(--white);
+    }
+
+    .filter-tab[data-tab="tab-entreprises"].active .tab-badge.badge-entreprise {
+      background-color: var(--vldb-blue-primary);
+      border-color: var(--vldb-blue-primary);
+      color: var(--white);
+    }
+
+    /* Contenu scrollable des filtres */
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+      background-color: var(--vldb-beige-bg);
+    }
+
+    .tab-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .tab-panel.active {
+      display: flex;
+    }
+
+    /* Couches cross-toggle (masquer l'autre calque) */
+    .layer-card-toggle {
+      border: 1px solid var(--vldb-beige-border);
+      border-radius: var(--radius-card);
+      padding: 0.9rem 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .layer-card-toggle.formation {
+      border-left: 5px solid var(--vldb-green-main);
+      background-color: var(--vldb-green-soft);
+      border-color: var(--vldb-green-light);
+    }
+
+    .layer-card-toggle.entreprise {
+      border-left: 5px solid var(--vldb-blue-primary);
+      background-color: var(--vldb-blue-soft);
+      border-color: var(--vldb-blue-light);
+    }
+
+    .layer-card-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .layer-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--vldb-text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .layer-card-count {
+      font-size: 0.75rem;
+      color: var(--vldb-text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Section divider */
+    .section-divider-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--vldb-green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--vldb-beige-border);
+      padding-bottom: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .btn-reset-section {
+      background: none;
+      border: none;
+      color: var(--vldb-orange-accent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+
+    .btn-reset-section:hover {
+      color: var(--vldb-orange-hover);
+      text-decoration: underline;
+    }
+
+    /* Form Inputs */
+    .fr-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .fr-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--vldb-text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .fr-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .fr-input-wrap i {
+      position: absolute;
+      left: 0.85rem;
+      color: var(--vldb-text-muted);
+      font-size: 1rem;
+    }
+
+    .fr-input {
+      width: 100%;
+      padding: 0.6rem 0.85rem 0.6rem 2.3rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      border: 1px solid var(--vldb-beige-border);
+      border-radius: var(--radius-input);
+      background-color: var(--white);
+      color: var(--vldb-text-main);
+      transition: all 0.2s ease;
+    }
+
+    .fr-input:focus, .fr-select:focus {
+      outline: none;
+      border-color: var(--vldb-green-main);
+      box-shadow: 0 0 0 3px rgba(117, 164, 52, 0.2);
+    }
+
+    .fr-select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      border: 1px solid var(--vldb-beige-border);
+      border-radius: var(--radius-input);
+      background-color: var(--white);
+      color: var(--vldb-text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    /* Checkbox & Radio Tags Multi-select (Pills Beige & Vert) */
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.25rem;
+    }
+
+    .chip-item {
+      position: relative;
+    }
+
+    .chip-item input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chip-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--vldb-beige-border);
+      background-color: var(--vldb-beige-card);
+      color: var(--vldb-text-main);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .chip-label:hover {
+      border-color: var(--vldb-green-main);
+      background-color: var(--vldb-green-soft);
+      color: var(--vldb-green-dark);
+    }
+
+    .chip-item.chip-green input[type="checkbox"]:checked + .chip-label {
+      background-color: var(--vldb-green-main);
+      border-color: var(--vldb-green-main);
+      color: var(--white);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(117, 164, 52, 0.35);
+    }
+
+    .chip-item.chip-blue input[type="checkbox"]:checked + .chip-label {
+      background-color: var(--vldb-blue-primary);
+      border-color: var(--vldb-blue-primary);
+      color: var(--white);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 80, 164, 0.3);
+    }
+
+    /* Toggle Switch VLDB */
+    .fr-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .fr-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      background-color: var(--vldb-beige-border);
+      border-radius: var(--radius-pill);
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      border-radius: 50%;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .fr-toggle.toggle-green input:checked + .toggle-slider {
+      background-color: var(--vldb-green-main);
+    }
+
+    .fr-toggle.toggle-blue input:checked + .toggle-slider {
+      background-color: var(--vldb-blue-primary);
+    }
+
+    .fr-toggle input:checked + .toggle-slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Carte Leaflet */
+    #map {
+      flex: 1;
+      height: 100%;
+      width: 100%;
+      background-color: #f2efe9;
+      z-index: 100;
+    }
+
+    /* Autocomplete BAN Address Bar floating over map */
+    .map-floating-search {
+      position: absolute;
+      top: 1.25rem;
+      left: 4.5rem;
+      z-index: 800;
+      width: 350px;
+      max-width: calc(100vw - 120px);
+    }
+
+    .address-search-card {
+      background: var(--vldb-beige-surface);
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-md);
+      padding: 0.45rem 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border: 1px solid var(--vldb-beige-border);
+      transition: all 0.2s;
+    }
+
+    .address-search-card:focus-within {
+      border-color: var(--vldb-green-main);
+      box-shadow: 0 4px 20px rgba(117, 164, 52, 0.2);
+    }
+
+    .address-search-card input {
+      border: none;
+      outline: none;
+      font-size: 0.84rem;
+      font-family: inherit;
+      width: 100%;
+      color: var(--vldb-text-main);
+      background: transparent;
+    }
+
+    .address-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--vldb-beige-surface);
+      border: 1px solid var(--vldb-beige-border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-lg);
+      margin-top: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .address-item {
+      padding: 0.65rem 0.95rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--vldb-beige-card);
+      display: flex;
+      flex-direction: column;
+      transition: background 0.15s;
+    }
+
+    .address-item:hover {
+      background-color: var(--vldb-green-soft);
+      color: var(--vldb-green-dark);
+    }
+
+    /* Offcanvas (Fiche de détail) style VLDB Teintes Vert & Beige */
+    .offcanvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 460px;
+      max-width: 95vw;
+      height: 100%;
+      background: var(--vldb-beige-surface);
+      border-left: 1px solid var(--vldb-beige-border);
+      z-index: 950;
+      box-shadow: -6px 0 32px rgba(0, 64, 33, 0.12);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .offcanvas.open {
+      transform: translateX(0);
+    }
+
+    .offcanvas-header {
+      padding: 1.4rem 1.45rem 1.15rem;
+      background-color: var(--vldb-beige-card);
+      border-bottom: 1px solid var(--vldb-beige-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .offcanvas-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-formation-theme {
+      background: var(--vldb-green-soft);
+      color: var(--vldb-green-dark);
+      border: 1px solid var(--vldb-green-light);
+    }
+
+    .badge-entreprise-theme {
+      background: var(--vldb-blue-soft);
+      color: var(--vldb-blue-primary);
+      border: 1px solid var(--vldb-blue-light);
+    }
+
+    .offcanvas-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--vldb-text-main);
+      line-height: 1.35;
+      margin-top: 0.45rem;
+    }
+
+    .offcanvas-subtitle {
+      font-size: 0.85rem;
+      color: var(--vldb-text-muted);
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+
+    .offcanvas-close-btn {
+      background: var(--white);
+      border: 1px solid var(--vldb-beige-border);
+      font-size: 1.3rem;
+      color: var(--vldb-text-muted);
+      cursor: pointer;
+      padding: 0.35rem;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .offcanvas-close-btn:hover {
+      background-color: var(--vldb-beige-card);
+      color: var(--vldb-text-main);
+    }
+
+    .offcanvas-body {
+      padding: 1.4rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      background-color: var(--vldb-beige-bg);
+    }
+
+    .detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .detail-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--vldb-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-bottom: 1px solid var(--vldb-beige-border);
+      padding-bottom: 0.35rem;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.7rem;
+    }
+
+    .detail-card {
+      background-color: var(--vldb-beige-card);
+      padding: 0.75rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid var(--vldb-beige-border);
+      border-left: 4px solid var(--vldb-green-main);
+    }
+
+    .detail-card.green-accent {
+      border-left-color: var(--vldb-green-main);
+      background-color: var(--vldb-green-soft);
+      border-color: var(--vldb-green-light);
+    }
+
+    .detail-card.beige-accent {
+      border-left-color: var(--vldb-orange-accent);
+      background-color: var(--vldb-beige-card);
+      border-color: var(--vldb-beige-border);
+    }
+
+    .detail-card.blue-accent {
+      border-left-color: var(--vldb-blue-primary);
+      background-color: var(--vldb-blue-soft);
+      border-color: var(--vldb-blue-light);
+    }
+
+    .detail-card-label {
+      font-size: 0.7rem;
+      color: var(--vldb-text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .detail-card-val {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--vldb-text-main);
+      margin-top: 0.2rem;
+    }
+
+    .detail-text-block {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--vldb-text-main);
+      background-color: var(--vldb-beige-card);
+      padding: 0.95rem;
+      border-radius: 12px;
+      border: 1px solid var(--vldb-beige-border);
+      white-space: pre-wrap;
+    }
+
+    .offcanvas-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Boutons de style "Vallée de la Batterie" (Pill shapes) */
+    .vldb-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .vldb-btn--primary {
+      background-color: var(--vldb-orange-accent);
+      color: var(--vldb-text-main);
+      box-shadow: 0 4px 14px rgba(255, 153, 0, 0.28);
+    }
+
+    .vldb-btn--primary:hover {
+      background-color: var(--vldb-orange-hover);
+      color: var(--white);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(208, 125, 2, 0.35);
+    }
+
+    .vldb-btn--green {
+      background-color: var(--vldb-green-main);
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(117, 164, 52, 0.3);
+    }
+
+    .vldb-btn--green:hover {
+      background-color: var(--vldb-green-dark);
+      transform: translateY(-1px);
+    }
+
+    .vldb-btn--secondary {
+      background-color: var(--vldb-beige-surface);
+      color: var(--vldb-green-dark);
+      border-color: var(--vldb-green-main);
+    }
+
+    .vldb-btn--secondary:hover {
+      background-color: var(--vldb-green-soft);
+      transform: translateY(-1px);
+    }
+
+    /* Custom Leaflet Cluster Styles (style Verts & Beiges VLDB) */
+    .custom-cluster {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-family: var(--font-vldb);
+      font-weight: 700;
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(0, 64, 33, 0.25);
+      transition: transform 0.2s ease;
+    }
+
+    .custom-cluster:hover {
+      transform: scale(1.1);
+    }
+
+    /* Cluster Vert (Formations) */
+    .cluster-formation-small {
+      background-color: rgba(117, 164, 52, 0.9);
+      border: 3.5px solid rgba(255, 245, 230, 0.95);
+      width: 36px;
+      height: 36px;
+      font-size: 11px;
+    }
+
+    .cluster-formation-medium {
+      background-color: rgba(90, 135, 30, 0.95);
+      border: 4px solid rgba(255, 245, 230, 1);
+      width: 44px;
+      height: 44px;
+      font-size: 13px;
+    }
+
+    .cluster-formation-large {
+      background-color: rgba(0, 64, 33, 0.95);
+      border: 5px solid rgba(226, 238, 211, 1);
+      width: 52px;
+      height: 52px;
+      font-size: 14px;
+    }
+
+    /* Cluster Bleu (Entreprises) */
+    .cluster-entreprise-small {
+      background-color: rgba(0, 80, 164, 0.9);
+      border: 3.5px solid rgba(255, 245, 230, 0.95);
+      width: 36px;
+      height: 36px;
+      font-size: 11px;
+    }
+
+    .cluster-entreprise-medium {
+      background-color: rgba(0, 66, 136, 0.95);
+      border: 4px solid rgba(255, 245, 230, 1);
+      width: 44px;
+      height: 44px;
+      font-size: 13px;
+    }
+
+    .cluster-entreprise-large {
+      background-color: rgba(0, 33, 68, 0.95);
+      border: 5px solid rgba(198, 214, 231, 1);
+      width: 52px;
+      height: 52px;
+      font-size: 14px;
+    }
+
+    /* Custom Leaflet Pin Markers */
+    .custom-marker-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: -2px 3px 8px rgba(0, 64, 33, 0.3);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .custom-marker-pin:hover {
+      transform: rotate(-45deg) scale(1.15);
+    }
+
+    .custom-marker-pin i {
+      transform: rotate(45deg);
+      color: white;
+      font-size: 16px;
+    }
+
+    .custom-marker-pin.formation-pin {
+      background: linear-gradient(135deg, var(--vldb-green-bright) 0%, var(--vldb-green-main) 100%);
+      border: 2px solid #ffffff;
+    }
+
+    .custom-marker-pin.entreprise-pin {
+      background: linear-gradient(135deg, var(--vldb-blue-primary) 0%, var(--vldb-blue-dark) 100%);
+      border: 2px solid #ffffff;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(251, 248, 242, 0.95);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--vldb-green-soft);
+      border-top-color: var(--vldb-green-main);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Leaflet popup styling override VLDB */
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px;
+      box-shadow: var(--shadow-md);
+      padding: 0;
+      overflow: hidden;
+      font-family: var(--font-vldb);
+      background-color: var(--vldb-beige-surface);
+      border: 1px solid var(--vldb-beige-border);
+    }
+
+    .leaflet-popup-content {
+      margin: 0;
+      line-height: 1.45;
+      font-size: 0.82rem;
+    }
+
+    .mini-popup-content {
+      padding: 0.9rem 1.1rem;
+      min-width: 220px;
+      cursor: pointer;
+    }
+
+    .mini-popup-header {
+      font-weight: 700;
+      font-size: 0.94rem;
+      margin-bottom: 0.3rem;
+      color: var(--vldb-text-main);
+      line-height: 1.3;
+    }
+
+    .mini-popup-sub {
+      color: var(--vldb-text-main);
+      font-size: 0.78rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .mini-popup-geo {
+      color: var(--vldb-text-muted);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .vldb-header__brand {
+        gap: 0.5rem;
+      }
+      .vldb-header__title {
+        font-size: 1rem;
+      }
+      .sidebar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .offcanvas {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Google Translate Element Container (invisible) -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <!-- En-tête officiel Vallée de la Batterie (Vert & Beige) -->
+  <header class="vldb-header">
+    <div class="vldb-header__brand">
+      <div class="vldb-header__logo-badge">
+        <i class="ri-battery-2-charge-fill"></i>
+      </div>
+      <div class="vldb-header__title-group">
+        <div class="vldb-header__title">
+          <span class="highlight-green" data-i18n="app_title_1">Vallée de la Batterie</span> <span class="highlight-orange" data-i18n="app_title_2">& Formations</span>
+        </div>
+        <div class="vldb-header__subtitle" data-i18n="app_subtitle">Cartographie interactive de la filière et de l'offre de compétences en Hauts-de-France</div>
+      </div>
+    </div>
+    <div class="vldb-header__tools">
+      
+
+      <!-- Sélecteur de langue FR / EN (Pill switch) -->
+      <div class="lang-switcher" title="Changer de langue / Change language">
+        <i class="ri-global-line"></i>
+        <button type="button" class="lang-btn active" id="btn-lang-fr" onclick="setAppLanguage('fr')">FR</button>
+        <span class="lang-divider">|</span>
+        <button type="button" class="lang-btn" id="btn-lang-en" onclick="setAppLanguage('en')">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteneur principal -->
+  <div class="app-container">
+
+    <!-- Volet latéral de filtres (Sidebar) -->
+    <aside class="sidebar" id="sidebar">
+      
+      <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" title="Afficher/Masquer les filtres" aria-label="Afficher/Masquer les filtres">
+        <i class="ri-arrow-left-s-line" id="sidebar-toggle-icon"></i>
+      </button>
+
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span><i class="ri-filter-3-line" style="color: var(--vldb-green-main);"></i> <span data-i18n="sidebar_title">Filtres de recherche</span></span>
+          <button class="btn-reset-all" id="btn-reset-all" title="Réinitialiser tous les filtres">
+            <i class="ri-refresh-line"></i> <span data-i18n="reset_all">Réinitialiser tout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2 Onglets thématiques VLDB -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-tab="tab-formations">
+          <span><i class="ri-graduation-cap-line"></i> <span data-i18n="tab_formations">Formations</span></span>
+          <span class="tab-badge badge-formation" id="badge-count-formations">0 / 0</span>
+        </button>
+        <button class="filter-tab" data-tab="tab-entreprises">
+          <span><i class="ri-building-line"></i> <span data-i18n="tab_entreprises">Entreprises</span></span>
+          <span class="tab-badge badge-entreprise" id="badge-count-entreprises">0 / 0</span>
+        </button>
+      </div>
+
+      <!-- Contenu des filtres -->
+      <div class="sidebar-content">
+
+        <!-- ============================================== -->
+        <!-- ONGLET 1: FORMATIONS (Vert & Beige)           -->
+        <!-- ============================================== -->
+        <div class="tab-panel active" id="tab-formations">
+          
+          <!-- Interrupteur pour masquer l'AUTRE calque (Entreprises) -->
+          <div class="layer-card-toggle entreprise">
+            <div class="layer-card-info">
+              <span class="layer-card-title">
+                <i class="ri-building-line" style="color: var(--vldb-blue-primary);"></i>
+                <span data-i18n="toggle_show_entreprises">Afficher les Entreprises</span>
+              </span>
+              <span class="layer-card-count" id="formation-tab-entreprise-count">61 entreprise(s) sur la carte</span>
+            </div>
+            <label class="fr-toggle toggle-blue">
+              <input type="checkbox" id="toggle-layer-entreprise-from-formations" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Section 1 : Localisation géographique (Formations) - 5 Départements HDF -->
+          <div class="section-divider-title">
+            <span><i class="ri-map-pin-range-line"></i> <span data-i18n="sec_location">Localisation</span></span>
+            <button class="btn-reset-section" onclick="clearGeoFilter()" data-i18n="clear_location">Effacer lieu</button>
+          </div>
+
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-geo-dept-form" data-i18n="label_dept">Département</label>
+            <select id="filter-geo-dept-form" class="fr-select geo-dept-select">
+              <option value="" data-i18n="all_hdf_depts">Tous les départements</option>
+              <option value="02 - Aisne">02 - Aisne</option>
+              <option value="59 - Nord">59 - Nord</option>
+              <option value="60 - Oise">60 - Oise</option>
+              <option value="62 - Pas-de-Calais">62 - Pas-de-Calais</option>
+              <option value="80 - Somme">80 - Somme</option>
+            </select>
+          </div>
+
+          <!-- Section 2 : Critères Formations -->
+          <div class="section-divider-title">
+            <span><i class="ri-equalizer-line"></i> <span data-i18n="sec_criteria_form">Critères Formation</span></span>
+          </div>
+
+          <!-- Recherche textuelle formations -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="search-formation" data-i18n="search_form_label">Recherche formation / établissement</label>
+            <div class="fr-input-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" id="search-formation" class="fr-input" placeholder="Intitulé, établissement, ville, RNCP..." data-i18n-placeholder="search_form_ph">
+            </div>
+          </div>
+
+          <!-- Niveau de diplôme -->
+          <div class="fr-form-group">
+            <label class="fr-label" data-i18n="rncp_level_label">Niveau de diplôme (RNCP)</label>
+            <div class="chips-group" id="filter-formation-niveau">
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-3" value="3">
+                <label class="chip-label" for="niv-3" data-i18n="niv_3">Niveau 3 (CAP)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-4" value="4">
+                <label class="chip-label" for="niv-4">Niveau 4 (Bac)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-5" value="5">
+                <label class="chip-label" for="niv-5">Niveau 5 (Bac+2 / BTS)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-6" value="6">
+                <label class="chip-label" for="niv-6">Niveau 6 (Bac+3 / Licence / BUT)</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="niv-7" value="7">
+                <label class="chip-label" for="niv-7">Niveau 7 (Bac+5 / Master / Ingé)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type de diplôme -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-formation-diplome" data-i18n="degree_type_label">Type de diplôme</label>
+            <select id="filter-formation-diplome" class="fr-select">
+              <option value="" data-i18n="all_degrees">Tous les types de diplômes</option>
+            </select>
+          </div>
+
+          <!-- Métier cible -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-formation-metier" data-i18n="job_target_label">Filière / Métier visé</label>
+            <select id="filter-formation-metier" class="fr-select">
+              <option value="" data-i18n="all_jobs">Tous les métiers</option>
+            </select>
+          </div>
+
+          <!-- Type de formation / Modalité -->
+          <div class="fr-form-group">
+            <label class="fr-label" data-i18n="modality_label">Modalité de formation</label>
+            <div class="chips-group" id="filter-formation-modalite">
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="mod-init" value="initiale">
+                <label class="chip-label" for="mod-init" data-i18n="mod_init">Formation initiale</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="mod-alt" value="alternance">
+                <label class="chip-label" for="mod-alt" data-i18n="mod_alt">Alternance / Apprentissage</label>
+              </div>
+              <div class="chip-item chip-green">
+                <input type="checkbox" id="mod-cont" value="continue">
+                <label class="chip-label" for="mod-cont" data-i18n="mod_cont">Formation continue</label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- ONGLET 2: ENTREPRISES                         -->
+        <!-- ============================================== -->
+        <div class="tab-panel" id="tab-entreprises">
+
+          <!-- Interrupteur pour masquer l'AUTRE calque (Formations) -->
+          <div class="layer-card-toggle formation">
+            <div class="layer-card-info">
+              <span class="layer-card-title">
+                <i class="ri-graduation-cap-line" style="color: var(--vldb-green-main);"></i>
+                <span data-i18n="toggle_show_formations">Afficher les Formations</span>
+              </span>
+              <span class="layer-card-count" id="entreprise-tab-formation-count">275 formation(s) sur la carte</span>
+            </div>
+            <label class="fr-toggle toggle-green">
+              <input type="checkbox" id="toggle-layer-formation-from-entreprises" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Section 1 : Localisation géographique (Entreprises) - 5 Départements HDF -->
+          <div class="section-divider-title">
+            <span><i class="ri-map-pin-range-line"></i> <span data-i18n="sec_location">Localisation (Hauts-de-France)</span></span>
+            <button class="btn-reset-section" onclick="clearGeoFilter()" data-i18n="clear_location">Effacer lieu</button>
+          </div>
+
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-geo-dept-ent" data-i18n="label_dept">Département (Hauts-de-France)</label>
+            <select id="filter-geo-dept-ent" class="fr-select geo-dept-select">
+              <option value="" data-i18n="all_hdf_depts">Tous les départements (Hauts-de-France)</option>
+              <option value="02 - Aisne">02 - Aisne</option>
+              <option value="59 - Nord">59 - Nord</option>
+              <option value="60 - Oise">60 - Oise</option>
+              <option value="62 - Pas-de-Calais">62 - Pas-de-Calais</option>
+              <option value="80 - Somme">80 - Somme</option>
+            </select>
+          </div>
+
+          <!-- Section 2 : Critères Entreprises -->
+          <div class="section-divider-title">
+            <span><i class="ri-equalizer-line"></i> <span data-i18n="sec_criteria_ent">Critères Entreprise</span></span>
+          </div>
+
+          <!-- Recherche textuelle entreprise -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="search-entreprise" data-i18n="search_ent_label">Recherche entreprise / mots-clés</label>
+            <div class="fr-input-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" id="search-entreprise" class="fr-input" placeholder="Entreprise, produit, activité, ville..." data-i18n-placeholder="search_ent_ph">
+            </div>
+          </div>
+
+          <!-- Segment Chaîne de Valeur (CDV) -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-entreprise-segment" data-i18n="cdv_segment_label">Segment Chaîne de Valeur (CDV)</label>
+            <select id="filter-entreprise-segment" class="fr-select">
+              <option value="" data-i18n="all_segments">Tous les segments CDV</option>
+            </select>
+          </div>
+
+          <!-- Maillon CDV -->
+          <div class="fr-form-group">
+            <label class="fr-label" for="filter-entreprise-maillon" data-i18n="cdv_link_label">Maillon spécifique Chaîne de Valeur (CDV)</label>
+            <select id="filter-entreprise-maillon" class="fr-select">
+              <option value="" data-i18n="all_links">Tous les maillons CDV</option>
+            </select>
+          </div>
+
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Zone Carte -->
+    <main id="map"></main>
+
+    <!-- Barre de recherche d'adresse flottante (API BAN) -->
+    <div class="map-floating-search">
+      <div class="address-search-card">
+        <i class="ri-map-pin-2-line" style="color: var(--vldb-green-main);"></i>
+        <input type="text" id="address-search-input" placeholder="Rechercher une ville, adresse en HDF..." data-i18n-placeholder="search_address_ph" autocomplete="off">
+        <i class="ri-loader-4-line spinner-icon" id="address-spinner" style="display: none; color: var(--vldb-text-muted);"></i>
+      </div>
+      <div class="address-results" id="address-results"></div>
+    </div>
+
+    <!-- Offcanvas latéral (Fiche détaillée) -->
+    <div class="offcanvas" id="offcanvas" aria-hidden="true">
+      <div class="offcanvas-header">
+        <div>
+          <span class="offcanvas-type-badge" id="offcanvas-badge">TYPE</span>
+          <h2 class="offcanvas-title" id="offcanvas-title">Titre principal</h2>
+          <div class="offcanvas-subtitle" id="offcanvas-subtitle">Sous-titre / Établissement</div>
+        </div>
+        <button class="offcanvas-close-btn" id="offcanvas-close-btn" title="Fermer la fiche" aria-label="Fermer la fiche">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="offcanvas-body" id="offcanvas-body">
+        <!-- Contenu dynamique injecté en JS -->
+      </div>
+    </div>
+
+    <!-- Écran de chargement initial -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="spinner"></div>
+      <div style="font-weight: 700; color: var(--vldb-green-dark); font-size: 1.05rem;" data-i18n="loading_title">Chargement des données Hauts-de-France...</div>
+      <div style="font-size: 0.85rem; color: var(--vldb-text-muted);" data-i18n="loading_sub">Synchronisation avec les flux Grist en direct</div>
+    </div>
+
+  </div>
+
+  <!-- Bibliothèques JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- Google Translate Engine -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'fr',
+        includedLanguages: 'en,fr',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Application Logic & Internationalization -->
+  <script>
+    // Dictionnaire bilingue pour l'interface utilisateur
+    const I18N = {
+      fr: {
+        app_title_1: "Vallée de la Batterie",
+        app_title_2: "& Formations",
+        app_subtitle: "Cartographie interactive de la filière et de l'offre de compétences en Hauts-de-France",
+        live_status: "Hauts-de-France en direct",
+        sidebar_title: "Filtres de recherche",
+        reset_all: "Réinitialiser tout",
+        tab_formations: "Formations",
+        tab_entreprises: "Entreprises",
+        toggle_show_entreprises: "Afficher les Entreprises",
+        toggle_show_formations: "Afficher les Formations",
+        sec_location: "Localisation (Hauts-de-France)",
+        clear_location: "Effacer lieu",
+        label_dept: "Département (Hauts-de-France)",
+        all_hdf_depts: "Tous les départements (Hauts-de-France)",
+        sec_criteria_form: "Critères Formation",
+        search_form_label: "Recherche formation / établissement",
+        search_form_ph: "Intitulé, établissement, ville, RNCP...",
+        rncp_level_label: "Niveau de diplôme (RNCP)",
+        niv_3: "Niveau 3 (CAP)",
+        niv_4: "Niveau 4 (Bac)",
+        niv_5: "Niveau 5 (Bac+2 / BTS)",
+        niv_6: "Niveau 6 (Bac+3 / Licence / BUT)",
+        niv_7: "Niveau 7 (Bac+5 / Master / Ingé)",
+        degree_type_label: "Type de diplôme",
+        all_degrees: "Tous les types de diplômes",
+        job_target_label: "Filière / Métier visé",
+        all_jobs: "Tous les métiers",
+        modality_label: "Modalité de formation",
+        mod_init: "Formation initiale",
+        mod_alt: "Alternance / Apprentissage",
+        mod_cont: "Formation continue",
+        sec_criteria_ent: "Critères Entreprise",
+        search_ent_label: "Recherche entreprise / mots-clés",
+        search_ent_ph: "Entreprise, produit, activité, ville...",
+        cdv_segment_label: "Segment Chaîne de Valeur (CDV)",
+        all_segments: "Tous les segments CDV",
+        cdv_link_label: "Maillon spécifique Chaîne de Valeur (CDV)",
+        all_links: "Tous les maillons CDV",
+        search_address_ph: "Rechercher une ville, adresse en HDF...",
+        loading_title: "Chargement des données Hauts-de-France...",
+        loading_sub: "Synchronisation avec les flux Grist en direct",
+        badge_form: "Formation",
+        badge_ent: "Entreprise / Site",
+        sec_diploma_features: "Caractéristiques de la formation",
+        label_diploma_type: "Type de diplôme",
+        label_rncp_level: "Niveau RNCP",
+        label_acronym: "Acronyme",
+        label_rncp_code: "Code RNCP",
+        sec_job_modalities: "Métier & Modalités",
+        label_job_domain: "Métier / Domaine",
+        label_teaching_type: "Type d'enseignement",
+        sec_institution_location: "Établissement & Localisation",
+        btn_france_competences: "Consulter sur France Compétences",
+        btn_school_site: "Site web de l'établissement",
+        btn_official_site: "Visiter le site officiel",
+        btn_center_map: "Centrer la carte",
+        sec_cdv: "Chaîne de Valeur (CDV)",
+        label_cdv_segment: "Segment CDV",
+        label_cdv_link: "Maillon CDV",
+        label_site_status: "Statut du site",
+        label_actor_type: "Typologie d'acteur",
+        sec_products: "Produits & Solutions",
+        sec_activity_desc: "Descriptif de l'activité batterie",
+        sec_partnerships: "Partenariats AMI-CMA / Écosystème",
+        sec_location_siret: "Localisation & SIRET",
+        unspecified: "Non spécifié",
+        visible_formations: "formation(s) visible(s)",
+        visible_entreprises: "entreprise(s) visible(s)",
+        layer_hidden: "Calque masqué"
+      },
+      en: {
+        app_title_1: "Battery Valley",
+        app_title_2: "& Training",
+        app_subtitle: "Interactive mapping of the battery ecosystem and skills offerings in Hauts-de-France",
+        live_status: "Hauts-de-France live data",
+        sidebar_title: "Search filters",
+        reset_all: "Reset all",
+        tab_formations: "Training",
+        tab_entreprises: "Companies",
+        toggle_show_entreprises: "Show Companies",
+        toggle_show_formations: "Show Training programs",
+        sec_location: "Location (Hauts-de-France)",
+        clear_location: "Clear place",
+        label_dept: "Department (Hauts-de-France)",
+        all_hdf_depts: "All departments (Hauts-de-France)",
+        sec_criteria_form: "Training criteria",
+        search_form_label: "Search training / institution",
+        search_form_ph: "Title, institution, city, RNCP...",
+        rncp_level_label: "Degree Level (RNCP)",
+        niv_3: "Level 3 (CAP / Vocational)",
+        niv_4: "Level 4 (High School / Bac)",
+        niv_5: "Level 5 (Associate / Bac+2 / BTS)",
+        niv_6: "Level 6 (Bachelor / Bac+3 / BUT)",
+        niv_7: "Level 7 (Master / Bac+5 / Engineering)",
+        degree_type_label: "Degree type",
+        all_degrees: "All degree types",
+        job_target_label: "Target profession / field",
+        all_jobs: "All professions",
+        modality_label: "Training format",
+        mod_init: "Initial training",
+        mod_alt: "Work-study / Apprenticeship",
+        mod_cont: "Continuing education",
+        sec_criteria_ent: "Company criteria",
+        search_ent_label: "Search company / keywords",
+        search_ent_ph: "Company, product, activity, city...",
+        cdv_segment_label: "Value Chain Segment (CDV)",
+        all_segments: "All CDV segments",
+        cdv_link_label: "Specific Value Chain Link (CDV)",
+        all_links: "All CDV Links",
+        search_address_ph: "Search a city, address in HDF...",
+        loading_title: "Loading Hauts-de-France data...",
+        loading_sub: "Real-time sync with Grist data feeds",
+        badge_form: "Training",
+        badge_ent: "Company / Site",
+        sec_diploma_features: "Training details",
+        label_diploma_type: "Degree type",
+        label_rncp_level: "RNCP Level",
+        label_acronym: "Acronyme",
+        label_rncp_code: "RNCP Code",
+        sec_job_modalities: "Profession & Modalities",
+        label_job_domain: "Profession / Domain",
+        label_teaching_type: "Teaching format",
+        sec_institution_location: "Institution & Location",
+        btn_france_competences: "View on France Compétences",
+        btn_school_site: "Institution website",
+        btn_official_site: "Visit official website",
+        btn_center_map: "Center map",
+        sec_cdv: "Value Chain (CDV)",
+        label_cdv_segment: "CDV Segment",
+        label_cdv_link: "CDV Link",
+        label_site_status: "Site status",
+        label_actor_type: "Actor type",
+        sec_products: "Products & Solutions",
+        sec_activity_desc: "Battery activity description",
+        sec_partnerships: "AMI-CMA / Ecosystem Partnerships",
+        sec_location_siret: "Location & SIRET",
+        unspecified: "Not specified",
+        visible_formations: "training(s) visible",
+        visible_entreprises: "company(ies) visible",
+        layer_hidden: "Layer hidden"
+      }
+    };
+
+    let currentLang = 'fr';
+
+    // Fonction de bascule de langue
+    window.setAppLanguage = function(lang) {
+      currentLang = lang;
+
+      document.getElementById('btn-lang-fr').classList.toggle('active', lang === 'fr');
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      document.documentElement.lang = lang;
+
+      const dict = I18N[lang] || I18N.fr;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) el.setAttribute('placeholder', dict[key]);
+      });
+
+      try {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+          select.value = lang;
+          select.dispatchEvent(new Event('change'));
+        } else {
+          if (lang === 'en') {
+            document.cookie = "googtrans=/fr/en; path=/";
+          } else {
+            document.cookie = "googtrans=/fr/fr; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+          }
+        }
+      } catch (e) {}
+
+      updateCounts();
+
+      if (state.selectedItem) {
+        openDetailView(state.selectedItem.id);
+      }
+    };
+
+    // Référentiel des 5 départements des Hauts-de-France
+    const HDF_DEPTS = {
+      '02': { dept: '02 - Aisne', region: 'Hauts-de-France' },
+      '59': { dept: '59 - Nord', region: 'Hauts-de-France' },
+      '60': { dept: '60 - Oise', region: 'Hauts-de-France' },
+      '62': { dept: '62 - Pas-de-Calais', region: 'Hauts-de-France' },
+      '80': { dept: '80 - Somme', region: 'Hauts-de-France' }
+    };
+
+    // Résolution Département / Région normalisée (centrée sur Hauts-de-France)
+    function getNormalizedGeo(codePostal, rawDept = '', rawRegion = '') {
+      let code = '';
+      const cp = (codePostal || '').trim();
+      if (cp.length >= 2) {
+        code = cp.substring(0, 2);
+      }
+      if (!code && rawDept) {
+        code = rawDept.split('-')[0].replace(',', '').trim();
+      }
+
+      if (code && HDF_DEPTS[code]) {
+        return {
+          departement: HDF_DEPTS[code].dept,
+          region: 'Hauts-de-France',
+          codeDept: code,
+          isHDF: true
+        };
+      }
+      
+      const isHDF = (rawRegion || '').toLowerCase().includes('hauts-de-france') || ['02', '59', '60', '62', '80'].includes(code);
+      return {
+        departement: rawDept || 'Non spécifié',
+        region: rawRegion || 'Non spécifiée',
+        codeDept: code,
+        isHDF: isHDF
+      };
+    }
+
+    // Configuration des sources CSV Grist
+    const CSV_URLS = {
+      formations: [
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?tableId=OFFRE_FORMATIONS',
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?viewSection=1&tableId=OFFRE_FORMATIONS'
+      ],
+      entreprises: [
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?tableId=Acteurs_CDV_Batterie',
+        'https://grist.numerique.gouv.fr/o/docs/api/docs/7tZncCd8EmFpG84EurHQpG/download/csv?viewSection=7&tableId=Acteurs_CDV_Batterie'
+      ]
+    };
+
+    // État global de l'application
+    const state = {
+      rawFormations: [],
+      rawEntreprises: [],
+      filteredFormations: [],
+      filteredEntreprises: [],
+      filters: {
+        formationText: '',
+        formationNiveaux: [],
+        formationDiplome: '',
+        formationMetier: '',
+        formationModalites: [],
+        entrepriseText: '',
+        entrepriseSegment: '',
+        entrepriseMaillon: '',
+        geoDept: ''
+      },
+      layersVisible: {
+        formations: true,
+        entreprises: true
+      },
+      selectedItem: null
+    };
+
+    // Initialisation de la carte Leaflet - Centrage et Zoom Hauts-de-France
+    const HDF_CENTER = [50.15, 2.85];
+    const HDF_ZOOM = 8;
+
+    const map = L.map('map', {
+      center: HDF_CENTER,
+      zoom: HDF_ZOOM,
+      zoomControl: false,
+      minZoom: 6,
+      maxZoom: 19
+    });
+
+    // Contrôles de zoom repositionnés
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Définition des Fonds de Carte (OpenStreetMap par défaut)
+    const baseLayers = {
+      "OpenStreetMap France": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }),
+      "Plan IGN": L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.ign.fr/">IGN</a> - Plan IGN'
+      }),
+      "Photographies aériennes (IGN)": L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.ign.fr/">IGN</a> - BD ORTHO'
+      }),
+      "Positron (Fond clair)": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        attribution: '© CartoDB'
+      })
+    };
+
+    // Activer OpenStreetMap par défaut comme demandé
+    baseLayers["OpenStreetMap France"].addTo(map);
+    L.control.layers(baseLayers, null, { position: 'topright', collapsed: true }).addTo(map);
+
+    // Groupes de clusters distincts (style Formations Verts & Beiges VLDB)
+    const clusterFormations = L.markerClusterGroup({
+      showCoverageOnHover: true,
+      spiderfyOnMaxZoom: true,
+      maxClusterRadius: 40,
+      iconCreateFunction: function (cluster) {
+        const count = cluster.getChildCount();
+        let sizeClass = 'cluster-formation-small';
+        if (count > 15) sizeClass = 'cluster-formation-medium';
+        if (count > 40) sizeClass = 'cluster-formation-large';
+        return L.divIcon({
+          html: `<span>${count}</span>`,
+          className: `custom-cluster ${sizeClass}`,
+          iconSize: L.point(44, 44)
+        });
+      }
+    });
+
+    const clusterEntreprises = L.markerClusterGroup({
+      showCoverageOnHover: true,
+      spiderfyOnMaxZoom: true,
+      maxClusterRadius: 40,
+      iconCreateFunction: function (cluster) {
+        const count = cluster.getChildCount();
+        let sizeClass = 'cluster-entreprise-small';
+        if (count > 8) sizeClass = 'cluster-entreprise-medium';
+        if (count > 20) sizeClass = 'cluster-entreprise-large';
+        return L.divIcon({
+          html: `<span>${count}</span>`,
+          className: `custom-cluster ${sizeClass}`,
+          iconSize: L.point(44, 44)
+        });
+      }
+    });
+
+    map.addLayer(clusterFormations);
+    map.addLayer(clusterEntreprises);
+
+    function createFormationMarkerIcon() {
+      return L.divIcon({
+        className: 'custom-marker-wrapper',
+        html: `<div class="custom-marker-pin formation-pin" title="Offre de formation"><i class="ri-graduation-cap-fill"></i></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -32]
+      });
+    }
+
+    function createEntrepriseMarkerIcon() {
+      return L.divIcon({
+        className: 'custom-marker-wrapper',
+        html: `<div class="custom-marker-pin entreprise-pin" title="Acteur de la chaîne de valeur"><i class="ri-building-4-fill"></i></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -32]
+      });
+    }
+
+    // Téléchargement sécurisé avec fallback d'URL
+    async function fetchCsvWithFallback(urls) {
+      let lastError = null;
+      for (const url of urls) {
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) continue;
+          const text = await resp.text();
+          const lines = text.trim().split('\n');
+          if (lines.length > 5) return text;
+        } catch (e) {
+          lastError = e;
+        }
+      }
+      throw lastError || new Error('Impossible de charger les données CSV.');
+    }
+
+    // Chargement des données CSV via PapaParse - Filtrage amont exclusif Hauts-de-France
+    async function loadData() {
+      try {
+        const [resFormations, resEntreprises] = await Promise.all([
+          fetchCsvWithFallback(CSV_URLS.formations),
+          fetchCsvWithFallback(CSV_URLS.entreprises)
+        ]);
+
+        // Parse Formations (uniquement Hauts-de-France)
+        const parsedForm = Papa.parse(resFormations, { header: true, skipEmptyLines: true });
+        state.rawFormations = (parsedForm.data || []).filter(r => {
+          const lat = parseFloat((r['Latitude'] || '').toString().replace(',', '.'));
+          const lon = parseFloat((r['Longitude'] || '').toString().replace(',', '.'));
+          if (isNaN(lat) || isNaN(lon) || lat === 0) return false;
+
+          const cp = (r['Code Postal'] || '').toString().trim();
+          const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          return geo.isHDF;
+        }).map((r, idx) => {
+          const cp = (r['Code Postal'] || '').toString().trim();
+          const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          return {
+            id: 'form_' + idx,
+            type: 'formation',
+            typeDiplome: r['Type diplôme'] || r['Type diplome'] || '',
+            intitule: r['Intitulé'] || r['Intitule'] || '',
+            acronyme: r['Acronyme'] || '',
+            niveau: (r['Niveau'] || '').toString().trim(),
+            metier: r['Métier'] || r['Metier'] || '',
+            typeFormation: r['Type de formation'] || '',
+            etablissement: r['Etablissement'] || '',
+            adresse: r['Adresse'] || '',
+            ville: r['Ville'] || '',
+            codePostal: cp,
+            departement: geo.departement,
+            region: 'Hauts-de-France',
+            lat: parseFloat((r['Latitude'] || '').toString().replace(',', '.')),
+            lon: parseFloat((r['Longitude'] || '').toString().replace(',', '.')),
+            codeRNCP: r['Code RNCP'] || '',
+            lienFranceCompetences: r['Lien France Compétences'] || r['Lien France Competences'] || '',
+            siteWebEtablissement: r['Site_web_etablissement'] || r['Site web établissement'] || r['Site web etablissement'] || ''
+          };
+        });
+
+        // Parse Entreprises (uniquement Hauts-de-France)
+        const parsedEnt = Papa.parse(resEntreprises, { header: true, skipEmptyLines: true });
+        state.rawEntreprises = (parsedEnt.data || []).filter(r => {
+          const lat = parseFloat((r['Latitude'] || '').toString().replace(',', '.'));
+          const lon = parseFloat((r['Longitude'] || '').toString().replace(',', '.'));
+          if (isNaN(lat) || isNaN(lon) || lat === 0) return false;
+
+          const cp = (r['Code Postal'] || '').toString().trim();
+          const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          return geo.isHDF;
+        }).map((r, idx) => {
+          const cp = (r['Code Postal'] || '').toString().trim();
+          const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          return {
+            id: 'ent_' + idx,
+            type: 'entreprise',
+            entreprise: r["Nom de l'entreprise"] || '',
+            site: r['Nom du site / Établissement'] || r['Nom du site / Etablissement'] || '',
+            typeSite: r['Type de site'] || '',
+            statutSite: (r['Statut du site'] || '').toString().trim(),
+            siret: r['SIRET'] || '',
+            siren: r['SIREN'] || '',
+            adresse: r['Adresse (N° et Voie)'] || r['Adresse'] || '',
+            codePostal: cp,
+            ville: r['Ville'] || '',
+            departement: geo.departement,
+            region: 'Hauts-de-France',
+            lat: parseFloat((r['Latitude'] || '').toString().replace(',', '.')),
+            lon: parseFloat((r['Longitude'] || '').toString().replace(',', '.')),
+            typologie: r["Typologie d'acteur"] || '',
+            produits: r['Produits / solutions'] || '',
+            descriptif: r['Descriptif activité batterie'] || r['Descriptif activite batterie'] || '',
+            amiCma: r['Lien Partenariat AMI-CMA / Écosystème'] || r['Lien Partenariat AMI-CMA / Ecosysteme'] || '',
+            siteWeb: r['Site Web'] || '',
+            maillonCDV: r['Maillon CDV'] || '',
+            segmentCDV: r['Segment CDV'] || r['Segment CDV Batterie'] || ''
+          };
+        });
+
+        // Initialisation des options de filtres dynamiques
+        populateFilterDropdowns();
+
+        // Application initiale des filtres et affichage
+        applyFilters();
+
+        // Cacher l'overlay de chargement
+        document.getElementById('loading-overlay').style.display = 'none';
+
+      } catch (err) {
+        console.error('Erreur lors du chargement des données:', err);
+        document.getElementById('loading-overlay').innerHTML = `
+          <div style="color: #dc3545; font-weight: 700; font-size: 1.1rem;">
+            <i class="ri-error-warning-line"></i> Échec du chargement des données
+          </div>
+          <p style="font-size: 0.85rem; color: var(--vldb-text-muted);">${err.message}</p>
+          <button class="vldb-btn vldb-btn--green" onclick="location.reload()">Réessayer</button>
+        `;
+      }
+    }
+
+    // Remplissage dynamique des listes déroulantes de filtres
+    function populateFilterDropdowns() {
+      // 1. Diplômes
+      const diplomes = Array.from(new Set(state.rawFormations.map(f => f.typeDiplome).filter(Boolean))).sort();
+      const selectDiplome = document.getElementById('filter-formation-diplome');
+      diplomes.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        selectDiplome.appendChild(opt);
+      });
+
+      // 2. Métiers
+      const metiersSet = new Set();
+      state.rawFormations.forEach(f => {
+        if (f.metier) {
+          f.metier.split(',').forEach(m => metiersSet.add(m.trim()));
+        }
+      });
+      const selectMetier = document.getElementById('filter-formation-metier');
+      Array.from(metiersSet).sort().forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        selectMetier.appendChild(opt);
+      });
+
+      // 3. Segments CDV
+      const segments = Array.from(new Set(state.rawEntreprises.map(e => e.segmentCDV).filter(Boolean))).sort();
+      const selectSegment = document.getElementById('filter-entreprise-segment');
+      segments.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        selectSegment.appendChild(opt);
+      });
+
+      // 4. Maillons CDV (libellé explicite Maillons CDV)
+      const maillons = Array.from(new Set(state.rawEntreprises.map(e => e.maillonCDV).filter(Boolean))).sort();
+      const selectMaillon = document.getElementById('filter-entreprise-maillon');
+      maillons.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        selectMaillon.appendChild(opt);
+      });
+    }
+
+    // Application des filtres et mise à jour de la carte
+    function applyFilters() {
+      // 1. Filtrer Formations
+      state.filteredFormations = state.rawFormations.filter(f => {
+        if (state.filters.geoDept && f.departement !== state.filters.geoDept) {
+          return false;
+        }
+
+        if (state.filters.formationText) {
+          const q = state.filters.formationText.toLowerCase();
+          const match = (f.intitule && f.intitule.toLowerCase().includes(q)) ||
+                        (f.etablissement && f.etablissement.toLowerCase().includes(q)) ||
+                        (f.ville && f.ville.toLowerCase().includes(q)) ||
+                        (f.codeRNCP && f.codeRNCP.toLowerCase().includes(q)) ||
+                        (f.acronyme && f.acronyme.toLowerCase().includes(q));
+          if (!match) return false;
+        }
+
+        if (state.filters.formationNiveaux.length > 0) {
+          if (!state.filters.formationNiveaux.includes(f.niveau)) return false;
+        }
+
+        if (state.filters.formationDiplome && f.typeDiplome !== state.filters.formationDiplome) {
+          return false;
+        }
+
+        if (state.filters.formationMetier && (!f.metier || !f.metier.includes(state.filters.formationMetier))) {
+          return false;
+        }
+
+        if (state.filters.formationModalites.length > 0) {
+          const modStr = (f.typeFormation || '').toLowerCase();
+          const matchMod = state.filters.formationModalites.some(m => modStr.includes(m));
+          if (!matchMod) return false;
+        }
+
+        return true;
+      });
+
+      // 2. Filtrer Entreprises
+      state.filteredEntreprises = state.rawEntreprises.filter(e => {
+        if (state.filters.geoDept && e.departement !== state.filters.geoDept) {
+          return false;
+        }
+
+        if (state.filters.entrepriseText) {
+          const q = state.filters.entrepriseText.toLowerCase();
+          const match = (e.entreprise && e.entreprise.toLowerCase().includes(q)) ||
+                        (e.site && e.site.toLowerCase().includes(q)) ||
+                        (e.produits && e.produits.toLowerCase().includes(q)) ||
+                        (e.descriptif && e.descriptif.toLowerCase().includes(q)) ||
+                        (e.ville && e.ville.toLowerCase().includes(q)) ||
+                        (e.typologie && e.typologie.toLowerCase().includes(q));
+          if (!match) return false;
+        }
+
+        if (state.filters.entrepriseSegment && e.segmentCDV !== state.filters.entrepriseSegment) {
+          return false;
+        }
+
+        if (state.filters.entrepriseMaillon && e.maillonCDV !== state.filters.entrepriseMaillon) {
+          return false;
+        }
+
+        return true;
+      });
+
+      updateCounts();
+      renderMarkers();
+    }
+
+    // Mise à jour des compteurs et badges
+    function updateCounts() {
+      const fCount = state.filteredFormations.length;
+      const fTotal = state.rawFormations.length;
+      const eCount = state.filteredEntreprises.length;
+      const eTotal = state.rawEntreprises.length;
+      const dict = I18N[currentLang] || I18N.fr;
+
+      document.getElementById('badge-count-formations').textContent = `${fCount} / ${fTotal}`;
+      document.getElementById('badge-count-entreprises').textContent = `${eCount} / ${eTotal}`;
+
+      const formationCountInfo = state.layersVisible.formations
+        ? `${fCount} ${dict.visible_formations}`
+        : dict.layer_hidden;
+      const entrepriseCountInfo = state.layersVisible.entreprises
+        ? `${eCount} ${dict.visible_entreprises}`
+        : dict.layer_hidden;
+
+      const fTabEntCount = document.getElementById('formation-tab-entreprise-count');
+      if (fTabEntCount) fTabEntCount.textContent = entrepriseCountInfo;
+
+      const eTabFormCount = document.getElementById('entreprise-tab-formation-count');
+      if (eTabFormCount) eTabFormCount.textContent = formationCountInfo;
+    }
+
+    // Réinitialisation du filtre département
+    window.clearGeoFilter = function() {
+      state.filters.geoDept = '';
+      document.querySelectorAll('.geo-dept-select').forEach(s => s.value = '');
+      applyFilters();
+    };
+
+    // Rendu des marqueurs et clusters Leaflet
+    function renderMarkers() {
+      clusterFormations.clearLayers();
+      clusterEntreprises.clearLayers();
+
+      if (state.layersVisible.formations) {
+        const formationMarkers = state.filteredFormations.map(f => {
+          const marker = L.marker([f.lat, f.lon], { icon: createFormationMarkerIcon() });
+          
+          const popupHtml = `
+            <div class="mini-popup-content" onclick="openDetailView('${f.id}')">
+              <div class="mini-popup-header" style="color: var(--vldb-green-dark);">${escapeHtml(f.intitule || f.typeDiplome)}</div>
+              <div class="mini-popup-sub"><i class="ri-building-line" style="color: var(--vldb-green-main);"></i> ${escapeHtml(f.etablissement)}</div>
+              <div class="mini-popup-geo"><i class="ri-map-pin-line"></i> ${escapeHtml(f.ville)} (${escapeHtml(f.departement)})</div>
+            </div>
+          `;
+          marker.bindPopup(popupHtml);
+
+          marker.on('click', () => {
+            openDetailView(f.id);
+          });
+
+          return marker;
+        });
+        clusterFormations.addLayers(formationMarkers);
+      }
+
+      if (state.layersVisible.entreprises) {
+        const entrepriseMarkers = state.filteredEntreprises.map(e => {
+          const marker = L.marker([e.lat, e.lon], { icon: createEntrepriseMarkerIcon() });
+          
+          const popupHtml = `
+            <div class="mini-popup-content" onclick="openDetailView('${e.id}')">
+              <div class="mini-popup-header" style="color: var(--vldb-blue-primary);">${escapeHtml(e.entreprise)}</div>
+              <div class="mini-popup-sub"><i class="ri-node-tree" style="color: var(--vldb-blue-primary);"></i> ${escapeHtml(e.segmentCDV || e.typologie || 'Acteur')}</div>
+              <div class="mini-popup-geo"><i class="ri-map-pin-line"></i> ${escapeHtml(e.site || e.ville)} (${escapeHtml(e.departement)})</div>
+            </div>
+          `;
+          marker.bindPopup(popupHtml);
+
+          marker.on('click', () => {
+            openDetailView(e.id);
+          });
+
+          return marker;
+        });
+        clusterEntreprises.addLayers(entrepriseMarkers);
+      }
+    }
+
+    // Ouverture et affichage de la fiche dans l'Offcanvas latéral
+    window.openDetailView = function(id) {
+      const isFormation = id.startsWith('form_');
+      const item = isFormation 
+        ? state.rawFormations.find(f => f.id === id)
+        : state.rawEntreprises.find(e => e.id === id);
+
+      if (!item) return;
+      state.selectedItem = item;
+
+      const offcanvas = document.getElementById('offcanvas');
+      const badge = document.getElementById('offcanvas-badge');
+      const title = document.getElementById('offcanvas-title');
+      const subtitle = document.getElementById('offcanvas-subtitle');
+      const body = document.getElementById('offcanvas-body');
+      const dict = I18N[currentLang] || I18N.fr;
+
+      if (isFormation) {
+        badge.className = 'offcanvas-type-badge badge-formation-theme';
+        badge.innerHTML = `<i class="ri-graduation-cap-line"></i> ${dict.badge_form}`;
+        title.textContent = item.intitule || item.typeDiplome || dict.badge_form;
+        subtitle.textContent = `${item.etablissement} — ${item.ville} (${item.departement})`;
+
+        body.innerHTML = `
+          <!-- Section 1 : Caractéristiques du diplôme -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-award-line"></i> ${dict.sec_diploma_features}</div>
+            <div class="detail-grid">
+              <div class="detail-card green-accent">
+                <div class="detail-card-label">${dict.label_diploma_type}</div>
+                <div class="detail-card-val">${escapeHtml(item.typeDiplome || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card green-accent">
+                <div class="detail-card-label">${dict.label_rncp_level}</div>
+                <div class="detail-card-val">Niveau ${escapeHtml(item.niveau || 'N/A')}</div>
+              </div>
+              <div class="detail-card beige-accent">
+                <div class="detail-card-label">${dict.label_acronym}</div>
+                <div class="detail-card-val">${escapeHtml(item.acronyme || '-')}</div>
+              </div>
+              <div class="detail-card beige-accent">
+                <div class="detail-card-label">${dict.label_rncp_code}</div>
+                <div class="detail-card-val">${escapeHtml(item.codeRNCP || '-')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2 : Métiers et Modalités -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-tools-line"></i> ${dict.sec_job_modalities}</div>
+            <div class="detail-grid">
+              <div class="detail-card green-accent" style="grid-column: 1 / -1;">
+                <div class="detail-card-label">${dict.label_job_domain}</div>
+                <div class="detail-card-val">${escapeHtml(item.metier || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card beige-accent" style="grid-column: 1 / -1;">
+                <div class="detail-card-label">${dict.label_teaching_type}</div>
+                <div class="detail-card-val">${escapeHtml(item.typeFormation || dict.unspecified)}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3 : Établissement & Localisation -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-map-pin-2-line"></i> ${dict.sec_institution_location}</div>
+            <div class="detail-text-block">
+              <strong style="color: var(--vldb-green-dark);">${escapeHtml(item.etablissement)}</strong><br>
+              ${escapeHtml(item.adresse)}<br>
+              ${escapeHtml(item.codePostal)} ${escapeHtml(item.ville)}<br>
+              <span style="font-size: 0.76rem; color: var(--vldb-text-muted);">${escapeHtml(item.departement)} — Hauts-de-France</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="offcanvas-actions">
+            ${item.lienFranceCompetences ? `
+              <a href="${encodeURI(item.lienFranceCompetences)}" target="_blank" rel="noopener noreferrer" class="vldb-btn vldb-btn--primary">
+                <i class="ri-external-link-line"></i> ${dict.btn_france_competences}
+              </a>
+            ` : ''}
+            ${item.siteWebEtablissement ? `
+              <a href="${encodeURI(item.siteWebEtablissement)}" target="_blank" rel="noopener noreferrer" class="vldb-btn vldb-btn--green">
+                <i class="ri-global-line"></i> ${dict.btn_school_site}
+              </a>
+            ` : ''}
+            <button class="vldb-btn vldb-btn--secondary" onclick="centerMapOn(${item.lat}, ${item.lon})">
+              <i class="ri-focus-3-line"></i> ${dict.btn_center_map}
+            </button>
+          </div>
+        `;
+      } else {
+        badge.className = 'offcanvas-type-badge badge-entreprise-theme';
+        badge.innerHTML = `<i class="ri-building-line"></i> ${dict.badge_ent}`;
+        title.textContent = item.entreprise || 'Entreprise';
+        subtitle.textContent = `${item.site || 'Site'} — ${item.ville} (${item.departement})`;
+
+        body.innerHTML = `
+          <!-- Section 1 : Chaîne de Valeur Batterie -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-node-tree"></i> ${dict.sec_cdv}</div>
+            <div class="detail-grid">
+              <div class="detail-card blue-accent" style="grid-column: 1 / -1;">
+                <div class="detail-card-label">${dict.label_cdv_segment}</div>
+                <div class="detail-card-val">${escapeHtml(item.segmentCDV || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card blue-accent" style="grid-column: 1 / -1;">
+                <div class="detail-card-label">${dict.label_cdv_link}</div>
+                <div class="detail-card-val">${escapeHtml(item.maillonCDV || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-card-label">${dict.label_site_status}</div>
+                <div class="detail-card-val">${escapeHtml(item.statutSite || dict.unspecified)}</div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-card-label">${dict.label_actor_type}</div>
+                <div class="detail-card-val">${escapeHtml(item.typologie || '-')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2 : Produits & Activité détaillée -->
+          ${item.produits ? `
+            <div class="detail-section">
+              <div class="detail-section-title"><i class="ri-box-3-line"></i> ${dict.sec_products}</div>
+              <div class="detail-text-block">${escapeHtml(item.produits)}</div>
+            </div>
+          ` : ''}
+
+          ${item.descriptif ? `
+            <div class="detail-section">
+              <div class="detail-section-title"><i class="ri-file-text-line"></i> ${dict.sec_activity_desc}</div>
+              <div class="detail-text-block">${escapeHtml(item.descriptif)}</div>
+            </div>
+          ` : ''}
+
+          <!-- Section 3 : Écosystème & Partenariats -->
+          ${item.amiCma ? `
+            <div class="detail-section">
+              <div class="detail-section-title"><i class="ri-shake-hands-line"></i> ${dict.sec_partnerships}</div>
+              <div class="detail-text-block"><strong>${escapeHtml(item.amiCma)}</strong></div>
+            </div>
+          ` : ''}
+
+          <!-- Section 4 : Localisation & Identifiants -->
+          <div class="detail-section">
+            <div class="detail-section-title"><i class="ri-map-pin-2-line"></i> ${dict.sec_location_siret}</div>
+            <div class="detail-text-block">
+              <strong style="color: var(--vldb-blue-primary);">${escapeHtml(item.site || item.entreprise)}</strong><br>
+              ${escapeHtml(item.adresse)}<br>
+              ${escapeHtml(item.codePostal)} ${escapeHtml(item.ville)}<br>
+              <span style="font-size: 0.76rem; color: var(--vldb-text-muted);">${escapeHtml(item.departement)} — Hauts-de-France</span><br>
+              ${item.siret ? `<span style="font-size: 0.76rem; color: var(--vldb-text-muted);">SIRET: ${escapeHtml(item.siret)}</span>` : ''}
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="offcanvas-actions">
+            ${item.siteWeb ? `
+              <a href="${encodeURI(item.siteWeb)}" target="_blank" rel="noopener noreferrer" class="vldb-btn vldb-btn--primary">
+                <i class="ri-global-line"></i> ${dict.btn_official_site}
+              </a>
+            ` : ''}
+            <button class="vldb-btn vldb-btn--secondary" onclick="centerMapOn(${item.lat}, ${item.lon})">
+              <i class="ri-focus-3-line"></i> ${dict.btn_center_map}
+            </button>
+          </div>
+        `;
+      }
+
+      offcanvas.classList.add('open');
+      offcanvas.setAttribute('aria-hidden', 'false');
+    };
+
+    // Centrage de la carte
+    window.centerMapOn = function(lat, lon) {
+      map.setView([lat, lon], 13, { animate: true });
+    };
+
+    // Fermeture de l'Offcanvas
+    document.getElementById('offcanvas-close-btn').addEventListener('click', () => {
+      const offcanvas = document.getElementById('offcanvas');
+      offcanvas.classList.remove('open');
+      offcanvas.setAttribute('aria-hidden', 'true');
+    });
+
+    // Gestion de la sidebar rétractable
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+
+    sidebarToggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      sidebarToggleIcon.className = isCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line';
+      setTimeout(() => map.invalidateSize(), 350);
+    });
+
+    // Bascule des 2 onglets de la sidebar
+    const tabs = document.querySelectorAll('.filter-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const targetId = tab.getAttribute('data-tab');
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+
+    // Synchronisation des selects Département des 5 départements HDF
+    document.querySelectorAll('.geo-dept-select').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        state.filters.geoDept = e.target.value;
+        document.querySelectorAll('.geo-dept-select').forEach(otherSel => {
+          otherSel.value = e.target.value;
+        });
+        applyFilters();
+      });
+    });
+
+    // Écouteurs d'événements pour les Filtres Formations
+    document.getElementById('search-formation').addEventListener('input', (e) => {
+      state.filters.formationText = e.target.value;
+      applyFilters();
+    });
+
+    document.querySelectorAll('#filter-formation-niveau input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        state.filters.formationNiveaux = Array.from(
+          document.querySelectorAll('#filter-formation-niveau input[type="checkbox"]:checked')
+        ).map(c => c.value);
+        applyFilters();
+      });
+    });
+
+    document.getElementById('filter-formation-diplome').addEventListener('change', (e) => {
+      state.filters.formationDiplome = e.target.value;
+      applyFilters();
+    });
+
+    document.getElementById('filter-formation-metier').addEventListener('change', (e) => {
+      state.filters.formationMetier = e.target.value;
+      applyFilters();
+    });
+
+    document.querySelectorAll('#filter-formation-modalite input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        state.filters.formationModalites = Array.from(
+          document.querySelectorAll('#filter-formation-modalite input[type="checkbox"]:checked')
+        ).map(c => c.value);
+        applyFilters();
+      });
+    });
+
+    // Écouteurs d'événements pour les Filtres Entreprises
+    document.getElementById('search-entreprise').addEventListener('input', (e) => {
+      state.filters.entrepriseText = e.target.value;
+      applyFilters();
+    });
+
+    document.getElementById('filter-entreprise-segment').addEventListener('change', (e) => {
+      state.filters.entrepriseSegment = e.target.value;
+      applyFilters();
+    });
+
+    document.getElementById('filter-entreprise-maillon').addEventListener('change', (e) => {
+      state.filters.entrepriseMaillon = e.target.value;
+      applyFilters();
+    });
+
+    // Toggle croisé : Depuis l'onglet Formations, masquer/afficher les Entreprises
+    const toggleEntrepriseFromFormations = document.getElementById('toggle-layer-entreprise-from-formations');
+    toggleEntrepriseFromFormations.addEventListener('change', (e) => {
+      state.layersVisible.entreprises = e.target.checked;
+      renderMarkers();
+      updateCounts();
+    });
+
+    // Toggle croisé : Depuis l'onglet Entreprises, masquer/afficher les Formations
+    const toggleFormationFromEntreprises = document.getElementById('toggle-layer-formation-from-entreprises');
+    toggleFormationFromEntreprises.addEventListener('change', (e) => {
+      state.layersVisible.formations = e.target.checked;
+      renderMarkers();
+      updateCounts();
+    });
+
+    // Réinitialisation de tous les filtres (Recentrage Hauts-de-France)
+    document.getElementById('btn-reset-all').addEventListener('click', () => {
+      state.filters = {
+        formationText: '',
+        formationNiveaux: [],
+        formationDiplome: '',
+        formationMetier: '',
+        formationModalites: [],
+        entrepriseText: '',
+        entrepriseSegment: '',
+        entrepriseMaillon: '',
+        geoDept: ''
+      };
+
+      state.layersVisible.formations = true;
+      state.layersVisible.entreprises = true;
+      toggleEntrepriseFromFormations.checked = true;
+      toggleFormationFromEntreprises.checked = true;
+
+      document.getElementById('search-formation').value = '';
+      document.querySelectorAll('#filter-formation-niveau input[type="checkbox"]').forEach(c => c.checked = false);
+      document.getElementById('filter-formation-diplome').value = '';
+      document.getElementById('filter-formation-metier').value = '';
+      document.querySelectorAll('#filter-formation-modalite input[type="checkbox"]').forEach(c => c.checked = false);
+
+      document.getElementById('search-entreprise').value = '';
+      document.getElementById('filter-entreprise-segment').value = '';
+      document.getElementById('filter-entreprise-maillon').value = '';
+      document.querySelectorAll('.geo-dept-select').forEach(s => s.value = '');
+
+      // Reset vue centrée sur les Hauts-de-France
+      map.setView(HDF_CENTER, HDF_ZOOM);
+
+      applyFilters();
+    });
+
+    // Recherche d'adresse via l'API Adresse officielle BAN
+    const addressInput = document.getElementById('address-search-input');
+    const addressResults = document.getElementById('address-results');
+    const addressSpinner = document.getElementById('address-spinner');
+    let debounceTimer = null;
+    let searchMarker = null;
+
+    addressInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      clearTimeout(debounceTimer);
+
+      if (q.length < 3) {
+        addressResults.style.display = 'none';
+        addressResults.innerHTML = '';
+        return;
+      }
+
+      addressSpinner.style.display = 'inline-block';
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=5`);
+          const data = await res.json();
+          addressSpinner.style.display = 'none';
+
+          if (data.features && data.features.length > 0) {
+            addressResults.innerHTML = '';
+            data.features.forEach(f => {
+              const item = document.createElement('div');
+              item.className = 'address-item';
+              item.innerHTML = `
+                <span style="font-weight:600; color:var(--vldb-text-main);">${escapeHtml(f.properties.label)}</span>
+                <span style="font-size:0.72rem; color:var(--vldb-text-muted);">${escapeHtml(f.properties.context || '')}</span>
+              `;
+              item.addEventListener('click', () => {
+                const [lon, lat] = f.geometry.coordinates;
+                map.setView([lat, lon], 12, { animate: true });
+                
+                if (searchMarker) map.removeLayer(searchMarker);
+                searchMarker = L.circleMarker([lat, lon], {
+                  radius: 9,
+                  fillColor: '#75A434',
+                  color: '#ffffff',
+                  weight: 2.5,
+                  fillOpacity: 0.95
+                }).addTo(map).bindPopup(`<strong>${escapeHtml(f.properties.label)}</strong>`).openPopup();
+
+                addressResults.style.display = 'none';
+                addressInput.value = f.properties.label;
+              });
+              addressResults.appendChild(item);
+            });
+            addressResults.style.display = 'block';
+          } else {
+            addressResults.style.display = 'none';
+          }
+        } catch (err) {
+          addressSpinner.style.display = 'none';
+          console.error('Erreur API Adresse:', err);
+        }
+      }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.map-floating-search')) {
+        addressResults.style.display = 'none';
+      }
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Détection mode embarqué (?embed=true ou ?embedded=1)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('embed') === 'true' || urlParams.get('embed') === '1' || urlParams.get('embedded') === '1') {
+        const header = document.querySelector('.vldb-header');
+        if (header) header.style.display = 'none';
+      }
+
+      loadData();
+    });
+  </script>
+</body>
+</html>
