@@ -2038,17 +2038,18 @@
     });
 
     let heatLayer = L.heatLayer([], {
-      radius: 54,
-      blur: 32,
-      maxZoom: 8,
+      radius: 52,
+      blur: 28,
+      maxZoom: 9,
       max: 1.0,
-      minOpacity: 0.55,
+      minOpacity: 0.45,
       gradient: {
         0.10: '#0050A4',
-        0.30: '#22c55e',
-        0.55: '#facc15',
-        0.75: '#ff7700',
-        1.00: '#e1000f'
+        0.28: '#22c55e',
+        0.50: '#facc15',
+        0.72: '#ff7700',
+        0.90: '#e1000f',
+        1.00: '#8a0007'
       }
     });
 
@@ -2437,12 +2438,9 @@
     function updateHeatmapLayer() {
       const heatPoints = state.filteredEntreprises.map(e => {
         const med = e.effectifMedian || 20;
-        let intensity = 0.35;
-        if (med >= 1000) intensity = 1.0;
-        else if (med >= 500) intensity = 0.85;
-        else if (med >= 250) intensity = 0.65;
-        else if (med >= 100) intensity = 0.50;
-        else intensity = 0.35;
+        // Intensité continue proportionnelle au volume réel d'emplois du site
+        // Permet de faire ressortir fidèlement la concentration des méga-sites (ex: Vallée de la Batterie HDF ~41k vs AURA ~23k)
+        let intensity = Math.min(1.0, Math.max(0.12, med / 1200));
 
         return [e.lat, e.lon, intensity];
       });

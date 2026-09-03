@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <title>Écosystème Batterie - Statistiques & Ratios des Entreprises</title>
+  <title>Écosystème Batterie - Statistiques, Activités & Données d'Emploi</title>
   
   <!-- Favicon Batterie -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='25' height='16' x='2' y='8' rx='3' fill='%23000091'/%3E%3Crect width='3' height='8' x='27' y='12' rx='1.5' fill='%23000091'/%3E%3Cpath d='M15 10L9.5 17H14L13 22L18.5 15H14L15 10Z' fill='%23FACC15'/%3E%3C/svg%3E">
@@ -36,6 +36,9 @@
       --blue-entreprise-main: #0066cc;
       --blue-entreprise-light: #e8f3fc;
       --blue-entreprise-dark: #00458a;
+      --orange-accent: #FF8800;
+      --orange-soft: #FFF3DE;
+      --amber-dark: #854100;
       --grey-50: #161616;
       --grey-100: #242424;
       --grey-200: #3a3a3a;
@@ -175,8 +178,53 @@
       padding: 1.25rem 1.5rem 3rem;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.35rem;
       width: 100%;
+    }
+
+    /* Barre de Sélection des 2 Onglets DSFR */
+    .view-switcher-bar {
+      display: flex;
+      gap: 0.75rem;
+      background: var(--white);
+      border: 1px solid var(--grey-900);
+      border-radius: 8px;
+      padding: 0.45rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .view-tab-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.94rem;
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--grey-400);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-tab-btn:hover {
+      color: var(--blue-france-sun-113);
+      background-color: var(--blue-france-975);
+    }
+
+    .view-tab-btn.active {
+      background-color: var(--blue-france-sun-113);
+      color: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .view-tab-btn.active.tab-orange {
+      background-color: var(--orange-accent);
+      color: var(--white);
     }
 
     /* Barre de filtres interactive */
@@ -198,7 +246,7 @@
     }
 
     .filters-title {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
       color: var(--blue-france-sun-113);
       display: flex;
@@ -242,19 +290,20 @@
       color: var(--grey-200);
     }
 
-    .fr-select, .fr-input {
+    .fr-select {
       width: 100%;
-      padding: 0.5rem 0.65rem;
-      font-size: 0.8rem;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.82rem;
       font-family: inherit;
       border: 1px solid var(--grey-800);
       border-radius: 4px;
       background-color: var(--white);
       color: var(--grey-50);
       transition: border-color 0.2s, box-shadow 0.2s;
+      cursor: pointer;
     }
 
-    .fr-select:focus, .fr-input:focus {
+    .fr-select:focus {
       outline: 2px solid var(--blue-france-sun-113);
       outline-offset: 1px;
       border-color: var(--blue-france-sun-113);
@@ -263,7 +312,7 @@
     /* Grille de KPI Cards */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1rem;
     }
 
@@ -289,8 +338,9 @@
       background-color: var(--blue-france-sun-113);
     }
 
-    .kpi-card.green::before { background-color: var(--green-formation-main); }
     .kpi-card.blue::before { background-color: var(--blue-entreprise-main); }
+    .kpi-card.orange::before { background-color: var(--orange-accent); }
+    .kpi-card.green::before { background-color: var(--green-formation-main); }
     .kpi-card.red::before { background-color: var(--red-marianne-425); }
 
     .kpi-header {
@@ -305,21 +355,33 @@
     }
 
     .kpi-value {
-      font-size: 1.8rem;
+      font-size: 1.65rem;
       font-weight: 800;
       color: var(--blue-france-sun-113);
       margin: 0.35rem 0 0.15rem;
-      line-height: 1.1;
+      line-height: 1.15;
     }
 
-    .kpi-card.green .kpi-value { color: var(--green-formation-main); }
     .kpi-card.blue .kpi-value { color: var(--blue-entreprise-main); }
+    .kpi-card.orange .kpi-value { color: var(--amber-dark); }
+    .kpi-card.green .kpi-value { color: var(--green-formation-main); }
     .kpi-card.red .kpi-value { color: var(--red-marianne-425); }
 
     .kpi-subtext {
       font-size: 0.75rem;
       color: var(--grey-400);
       font-weight: 500;
+    }
+
+    /* Sections de Vues */
+    .view-content-section {
+      display: none;
+      flex-direction: column;
+      gap: 1.35rem;
+    }
+
+    .view-content-section.active {
+      display: flex;
     }
 
     /* Grille de Graphiques */
@@ -337,7 +399,7 @@
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      min-height: 400px;
+      min-height: 410px;
     }
 
     .chart-card.full-width {
@@ -368,7 +430,7 @@
     }
 
     .chart-subtitle {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--grey-400);
       margin-top: 0.15rem;
     }
@@ -409,6 +471,7 @@
       .charts-grid-2 { grid-template-columns: 1fr; }
       .fr-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
       .fr-header__tools { align-self: flex-end; }
+      .view-switcher-bar { flex-direction: column; }
     }
   </style>
 </head>
@@ -422,9 +485,9 @@
       </div>
       <div class="fr-header__title-group">
         <div class="fr-header__title">
-          Écosystème Batterie — Statistiques & Ratios
+          Écosystème Batterie — Statistiques, Activités & Emploi
         </div>
-        <div class="fr-header__subtitle">Analyse multidimensionnelle des acteurs de la chaîne de valeur batterie en France</div>
+        <div class="fr-header__subtitle">Analyse multidimensionnelle des acteurs de la chaîne de valeur, spécialisations et effectifs</div>
       </div>
     </div>
     <div class="fr-header__tools">
@@ -440,6 +503,18 @@
 
   <!-- Contenu du tableau de bord -->
   <main class="dashboard-container">
+
+    <!-- Sélecteur des 2 Onglets DSFR -->
+    <nav class="view-switcher-bar" aria-label="Choix de l'approche statistique">
+      <button class="view-tab-btn active" id="tab-btn-activites" onclick="switchMainView('activites')">
+        <i class="ri-node-tree"></i>
+        <span>Activités, Segments & Maillons CDV</span>
+      </button>
+      <button class="view-tab-btn tab-orange" id="tab-btn-emplois" onclick="switchMainView('emplois')">
+        <i class="ri-team-line"></i>
+        <span>Emplois, Effectifs & Typologies d'entreprises</span>
+      </button>
+    </nav>
 
     <!-- Barre de Filtres Transversaux -->
     <section class="filters-bar">
@@ -471,111 +546,213 @@
         <div class="filter-item">
           <label class="filter-label" for="filter-maillon">Maillon CDV</label>
           <select id="filter-maillon" class="fr-select" onchange="onFilterChange()">
-            <option value="">Tous les maillons</option>
+            <option value="">Tous les maillons CDV</option>
           </select>
         </div>
         <div class="filter-item">
-          <label class="filter-label" for="search-input">Recherche entreprise / mot-clé</label>
-          <input type="text" id="search-input" class="fr-input" placeholder="Nom, ville, produit..." oninput="onFilterChange()">
+          <label class="filter-label" for="filter-tranche">Tranche d'effectifs du site</label>
+          <select id="filter-tranche" class="fr-select" onchange="onFilterChange()">
+            <option value="">Toutes les tranches d'effectifs</option>
+            <option value="< 50">&lt; 50 salariés</option>
+            <option value="50-249">50 à 249 salariés</option>
+            <option value="250-499">250 à 499 salariés</option>
+            <option value="500-999">500 à 999 salariés</option>
+            <option value="1000+">1 000+ salariés</option>
+          </select>
         </div>
       </div>
     </section>
 
-    <!-- Grille de KPI Cards & Ratios synthétiques -->
-    <section class="kpi-grid">
-      <div class="kpi-card blue">
-        <div class="kpi-header">
-          <span>Acteurs Répertoriés</span>
-          <i class="ri-building-line"></i>
+    <!-- ================================================================= -->
+    <!-- SECTION VUE 1 : ACTIVITÉS, SEGMENTS & MAILLONS CDV                -->
+    <!-- ================================================================= -->
+    <section class="view-content-section active" id="view-activites">
+      
+      <!-- KPI Cards Vue Activités -->
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-header">
+            <span>Sites & Acteurs Répertoriés</span>
+            <i class="ri-building-line"></i>
+          </div>
+          <div class="kpi-value" id="kpi-act-total">0</div>
+          <div class="kpi-subtext" id="kpi-act-total-sub">Échantillon complet en direct</div>
         </div>
-        <div class="kpi-value" id="kpi-total">0</div>
-        <div class="kpi-subtext" id="kpi-total-sub">Échantillon complet en direct</div>
-      </div>
-      <div class="kpi-card green">
-        <div class="kpi-header">
-          <span>Couverture Régionale</span>
-          <i class="ri-map-pin-range-line"></i>
+        <div class="kpi-card green">
+          <div class="kpi-header">
+            <span>Couverture Territoriale</span>
+            <i class="ri-map-pin-range-line"></i>
+          </div>
+          <div class="kpi-value" id="kpi-act-regions">0 / 13</div>
+          <div class="kpi-subtext" id="kpi-act-depts">0 départements représentés</div>
         </div>
-        <div class="kpi-value" id="kpi-regions">0 / 13</div>
-        <div class="kpi-subtext" id="kpi-depts">0 départements représentés</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <span>Concentration Leaders</span>
-          <i class="ri-pie-chart-line"></i>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span>Concentration HDF & AURA</span>
+            <i class="ri-pie-chart-line"></i>
+          </div>
+          <div class="kpi-value" id="kpi-act-concentration">0%</div>
+          <div class="kpi-subtext">Hauts-de-France (62) + AURA (61)</div>
         </div>
-        <div class="kpi-value" id="kpi-concentration">0%</div>
-        <div class="kpi-subtext">Auvergne-Rhône-Alpes + Hauts-de-France</div>
       </div>
-      <div class="kpi-card red">
-        <div class="kpi-header">
-          <span>Poids Gigafactories / Procédés</span>
-          <i class="ri-flashlight-line"></i>
+
+      <!-- Ligne Graphiques 1 : Segments & Maillons CDV -->
+      <div class="charts-grid-2">
+        <!-- Donut Segments CDV -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-pie-chart-2-fill" style="color: var(--blue-france-sun-113);"></i> Répartition par Segment CDV</h2>
+              <span class="chart-subtitle">Poids relatif (%) et volume d'entreprises par segment de la filière</span>
+            </div>
+          </div>
+          <div id="chart-segments-activite" class="chart-container"></div>
         </div>
-        <div class="kpi-value" id="kpi-gigafactories">0%</div>
-        <div class="kpi-subtext" id="kpi-giga-count">0 entreprises manufacturing</div>
+
+        <!-- Top Maillons CDV -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-bar-chart-horizontal-fill" style="color: var(--green-formation-main);"></i> Top Maillons de la Chaîne de Valeur</h2>
+              <span class="chart-subtitle">Spécialisations industrielles et technologiques les plus représentées</span>
+            </div>
+          </div>
+          <div id="chart-maillons-activite" class="chart-container"></div>
+        </div>
       </div>
+
+      <!-- Ligne Graphiques 2 : Régions & Départements (Activités) -->
+      <div class="charts-grid-2">
+        <!-- Entreprises par Région -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-map-2-line" style="color: var(--blue-entreprise-main);"></i> Nombre d'Établissements par Région</h2>
+              <span class="chart-subtitle">Nombre de sites et entreprises recensés par région</span>
+            </div>
+          </div>
+          <div id="chart-regions-activite" class="chart-container"></div>
+        </div>
+
+        <!-- Top 10 Départements -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-map-pin-line" style="color: var(--red-marianne-425);"></i> Top 10 Départements Leaders en Acteurs</h2>
+              <span class="chart-subtitle">Départements concentrant le plus grand nombre de sites</span>
+            </div>
+          </div>
+          <div id="chart-depts-activite" class="chart-container"></div>
+        </div>
+      </div>
+
+      <!-- Matrice Croisée Régions × Segments CDV -->
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h2 class="chart-title"><i class="ri-stack-line" style="color: var(--blue-france-sun-113);"></i> Spécialisation Territoriale : Régions × Segments CDV</h2>
+            <span class="chart-subtitle">Structure et spécialisation de la chaîne de valeur ventilée par grande région</span>
+          </div>
+        </div>
+        <div id="chart-cross-activite" class="chart-container" style="height: 380px;"></div>
+      </div>
+
     </section>
 
-    <!-- Grille Graphique 1 : Segments & Maillons CDV -->
-    <section class="charts-grid-2">
-      <!-- Graphique 1 : Répartition des Segments CDV (Donut) -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div class="chart-title-group">
-            <h2 class="chart-title"><i class="ri-pie-chart-2-fill" style="color: var(--blue-france-sun-113);"></i> Répartition par Segment CDV</h2>
-            <span class="chart-subtitle">Poids relatif (%) et volume des entreprises par segment</span>
+    <!-- ================================================================= -->
+    <!-- SECTION VUE 2 : EMPLOIS, EFFECTIFS & TYPOLOGIES D'ENTREPRISES     -->
+    <!-- ================================================================= -->
+    <section class="view-content-section" id="view-emplois">
+
+      <!-- KPI Cards Vue Emplois -->
+      <div class="kpi-grid">
+        <div class="kpi-card orange">
+          <div class="kpi-header">
+            <span>Effectifs Salariés Estimés</span>
+            <i class="ri-team-line"></i>
           </div>
+          <div class="kpi-value" id="kpi-emp-total">0</div>
+          <div class="kpi-subtext" id="kpi-emp-total-sub">Cumul bornes basse et haute</div>
         </div>
-        <div id="chart-segments" class="chart-container"></div>
+        <div class="kpi-card green">
+          <div class="kpi-header">
+            <span>Région Leader en Emplois</span>
+            <i class="ri-trophy-line"></i>
+          </div>
+          <div class="kpi-value" id="kpi-emp-leader" style="font-size:1.35rem;">-</div>
+          <div class="kpi-subtext" id="kpi-emp-leader-sub">0 salariés estimés</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-header">
+            <span>Sites Répertoriés Filtrés</span>
+            <i class="ri-building-line"></i>
+          </div>
+          <div class="kpi-value" id="kpi-emp-sites">0</div>
+          <div class="kpi-subtext" id="kpi-emp-sites-sub">Sites industriels et R&D</div>
+        </div>
       </div>
 
-      <!-- Graphique 2 : Top 12 des Maillons CDV (Barres Horizontales) -->
-      <div class="chart-card">
+      <!-- Ligne Graphiques 1 : Emplois par Segment CDV & Tranches d'effectifs -->
+      <div class="charts-grid-2">
+        <!-- Volume d'emplois par Segment CDV -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-bar-chart-horizontal-fill" style="color: var(--blue-entreprise-main);"></i> Volume d'Emplois par Segment CDV</h2>
+              <span class="chart-subtitle">Effectifs salariés estimés (médiane) et part du total national</span>
+            </div>
+          </div>
+          <div id="chart-segments-emplois" class="chart-container"></div>
+        </div>
+
+        <!-- Tranches d'Effectifs du Site -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-pie-chart-2-fill" style="color: var(--orange-accent);"></i> Établissements par Tranche d'Effectifs</h2>
+              <span class="chart-subtitle">Répartition du nombre de sites selon l'effectif local du site</span>
+            </div>
+          </div>
+          <div id="chart-tranches-emplois" class="chart-container"></div>
+        </div>
+      </div>
+
+      <!-- Ligne Graphiques 2 : Emplois par Région & Département -->
+      <div class="charts-grid-2">
+        <!-- Emplois par Région -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-map-2-line" style="color: var(--blue-france-sun-113);"></i> Volume d'Emplois Salariés par Région</h2>
+              <span class="chart-subtitle">Cumul des effectifs salariés estimés sur les sites régionaux</span>
+            </div>
+          </div>
+          <div id="chart-regions-emplois" class="chart-container"></div>
+        </div>
+
+        <!-- Top Départements en Emplois -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-group">
+              <h2 class="chart-title"><i class="ri-map-pin-line" style="color: var(--amber-dark);"></i> Top 10 Départements en Volume d'Emplois</h2>
+              <span class="chart-subtitle">Cumul des effectifs salariés estimés par département</span>
+            </div>
+          </div>
+          <div id="chart-depts-emplois" class="chart-container"></div>
+        </div>
+      </div>
+
+      <!-- Graphique Pleine Largeur : Typologie d'entreprises -->
+      <div class="chart-card full-width">
         <div class="chart-header">
           <div class="chart-title-group">
-            <h2 class="chart-title"><i class="ri-bar-chart-horizontal-fill" style="color: var(--green-formation-main);"></i> Top Maillons de la Chaîne de Valeur</h2>
-            <span class="chart-subtitle">Spécialisations industrielles et technologiques les plus représentées</span>
+            <h2 class="chart-title"><i class="ri-building-4-line" style="color: var(--green-formation-main);"></i> Typologie d'entreprises</h2>
+            <span class="chart-subtitle">Grands Groupes & Constructeurs, Gigafactories & Fabricants de cellules, ETI industrielles, PME & Startups DeepTech, Organismes R&D</span>
           </div>
         </div>
-        <div id="chart-maillons" class="chart-container"></div>
-      </div>
-    </section>
-
-    <!-- Grille Graphique 2 : Analyse Géographique (Régions & Départements) -->
-    <section class="charts-grid-2">
-      <!-- Graphique 3 : Répartition par Région (Barres) -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div class="chart-title-group">
-            <h2 class="chart-title"><i class="ri-map-2-line" style="color: var(--blue-entreprise-main);"></i> Poids Régional de la Filière</h2>
-            <span class="chart-subtitle">Nombre d'entreprises et pourcentage du total national</span>
-          </div>
-        </div>
-        <div id="chart-regions" class="chart-container"></div>
+        <div id="chart-typologies-emplois" class="chart-container" style="height: 380px;"></div>
       </div>
 
-      <!-- Graphique 4 : Top 10 Départements Leaders -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div class="chart-title-group">
-            <h2 class="chart-title"><i class="ri-map-pin-line" style="color: var(--red-marianne-425);"></i> Top 10 Départements Leaders</h2>
-            <span class="chart-subtitle">Départements concentrant le plus d'acteurs de la filière</span>
-          </div>
-        </div>
-        <div id="chart-depts" class="chart-container"></div>
-      </div>
-    </section>
-
-    <!-- Graphique 5 : Croisement Région × Segment CDV (Spécialisation territoriale) -->
-    <section class="chart-card full-width">
-      <div class="chart-header">
-        <div class="chart-title-group">
-          <h2 class="chart-title"><i class="ri-stack-line" style="color: var(--blue-france-sun-113);"></i> Spécialisation Territoriale : Régions × Segments CDV</h2>
-          <span class="chart-subtitle">Structure de la chaîne de valeur ventilée par grande région</span>
-        </div>
-      </div>
-      <div id="chart-cross" class="chart-container" style="height: 380px;"></div>
     </section>
 
   </main>
@@ -709,21 +886,47 @@
       return { departement: rawDept || 'Non spécifié', region: rawRegion || 'Non spécifiée', codeDept: code };
     }
 
-    // Palette DSFR pour les graphiques
     const DSFR_PALETTE = [
-      '#000091', '#0066cc', '#1b8a3b', '#e1000f', '#6a6af4', 
-      '#0f5c25', '#00458a', '#8585f6', '#22c55e', '#f97316', '#a855f7'
+      '#000091', '#0066cc', '#1b8a3b', '#ff7700', '#e1000f', 
+      '#6a6af4', '#0f5c25', '#00458a', '#facc15', '#a855f7', '#06b6d4'
     ];
 
     let allData = [];
     let filteredData = [];
+    let currentMainView = 'activites';
 
-    // Instances ECharts
-    let chartSegments = null;
-    let chartMaillons = null;
-    let chartRegions = null;
-    let chartDepts = null;
-    let chartCross = null;
+    // Instances ECharts pour Vue 1 (Activités)
+    let chartSegmentsAct = null;
+    let chartMaillonsAct = null;
+    let chartRegionsAct = null;
+    let chartDeptsAct = null;
+    let chartCrossAct = null;
+
+    // Instances ECharts pour Vue 2 (Emplois)
+    let chartSegmentsEmp = null;
+    let chartTranchesEmp = null;
+    let chartRegionsEmp = null;
+    let chartDeptsEmp = null;
+    let chartTypologiesEmp = null;
+
+    // Détermination rigoureuse de la Typologie d'entreprises
+    function detectEnterpriseTypology(r) {
+      const typoText = ((r["Typologie d'acteur"] || '') + ' ' + (r["Nom de l'entreprise"] || '') + ' ' + (r["Descriptif activité batterie"] || '')).toLowerCase();
+      
+      if (typoText.includes('gigafactory') || typoText.includes('automotive cells company') || typoText.includes('verkor') || typoText.includes('aesc') || typoText.includes('prologium')) {
+        return 'Gigafactories & Fabricants de cellules';
+      }
+      if (typoText.includes('grand groupe') || typoText.includes('constructeur') || typoText.includes('totalenergies') || typoText.includes('saft') || typoText.includes('renault') || typoText.includes('stellantis') || typoText.includes('arkema') || typoText.includes('saint-gobain') || typoText.includes('schneider') || typoText.includes('air liquide') || typoText.includes('orano') || typoText.includes('veolia') || typoText.includes('faurecia') || typoText.includes('forvia') || typoText.includes('michelin') || typoText.includes('plastic omnium') || typoText.includes('opmobility') || typoText.includes('valeo')) {
+        return 'Grands Groupes & Constructeurs';
+      }
+      if (typoText.includes('cea') || typoText.includes('ifpen') || typoText.includes('cnrs') || typoText.includes('ineris') || typoText.includes('universit') || typoText.includes('laboratoire') || typoText.includes('recherche') || typoText.includes('institut') || typoText.includes('public')) {
+        return 'Organismes R&D & Acteurs Publics';
+      }
+      if (typoText.includes('eti') || typoText.includes('leader mondial') || typoText.includes('leader européen') || typoText.includes('groupe industriel') || typoText.includes('forsee power') || typoText.includes('mersen')) {
+        return 'ETI industrielles & Équipementiers';
+      }
+      return 'PME & Startups DeepTech';
+    }
 
     async function loadStatsData() {
       try {
@@ -746,6 +949,25 @@
         allData = (parsed.data || []).map((r, idx) => {
           const cp = (r['Code Postal'] || '').toString().trim();
           const geo = getNormalizedGeo(cp, r['Département'] || r['Departement'], r['Région'] || r['Region']);
+          
+          const bBasseRaw = (r['Effectifs_borne_basse'] || '').toString().replace(/\s/g, '').replace(',', '.');
+          const bHauteRaw = (r['Effectifs_borne_haute'] || '').toString().replace(/\s/g, '').replace(',', '.');
+          const borneBasse = parseFloat(bBasseRaw) || 0;
+          const borneHaute = parseFloat(bHauteRaw) || borneBasse;
+          const effectifMedian = (borneBasse + borneHaute) > 0 ? (borneBasse + borneHaute) / 2 : 20;
+
+          let trancheCode = 'Non renseigné';
+          let trancheLibelle = 'Non renseigné';
+          if (effectifMedian > 0) {
+            if (effectifMedian < 50) { trancheCode = '< 50'; trancheLibelle = '< 50 salariés'; }
+            else if (effectifMedian < 250) { trancheCode = '50-249'; trancheLibelle = '50 à 249 salariés'; }
+            else if (effectifMedian < 500) { trancheCode = '250-499'; trancheLibelle = '250 à 499 salariés'; }
+            else if (effectifMedian < 1000) { trancheCode = '500-999'; trancheLibelle = '500 à 999 salariés'; }
+            else { trancheCode = '1000+'; trancheLibelle = '1 000+ salariés'; }
+          }
+
+          const typology = detectEnterpriseTypology(r);
+
           return {
             id: 'ent_' + idx,
             entreprise: (r["Nom de l'entreprise"] || r['Entreprise'] || 'Sans nom').trim(),
@@ -755,15 +977,20 @@
             ville: (r['Ville'] || '').trim(),
             departement: geo.departement,
             region: geo.region,
-            typologie: (r["Typologie d'acteur"] || '').trim(),
-            produits: (r['Produits / solutions'] || '').trim()
+            typologie: typology,
+            produits: (r['Produits / solutions'] || '').trim(),
+            borneBasse: borneBasse,
+            borneHaute: borneHaute,
+            effectifMedian: effectifMedian,
+            trancheCode: trancheCode,
+            trancheLibelle: trancheLibelle
           };
         });
 
         filteredData = [...allData];
 
         initDropdowns();
-        initCharts();
+        initAllCharts();
         updateDashboard();
 
         document.getElementById('loading-overlay').style.display = 'none';
@@ -797,41 +1024,66 @@
       maillons.forEach(m => selMai.innerHTML += `<option value="${m}">${m}</option>`);
     }
 
-    function initCharts() {
-      chartSegments = echarts.init(document.getElementById('chart-segments'));
-      chartMaillons = echarts.init(document.getElementById('chart-maillons'));
-      chartRegions = echarts.init(document.getElementById('chart-regions'));
-      chartDepts = echarts.init(document.getElementById('chart-depts'));
-      chartCross = echarts.init(document.getElementById('chart-cross'));
+    function initAllCharts() {
+      // Vue 1 : Activités
+      chartSegmentsAct = echarts.init(document.getElementById('chart-segments-activite'));
+      chartMaillonsAct = echarts.init(document.getElementById('chart-maillons-activite'));
+      chartRegionsAct = echarts.init(document.getElementById('chart-regions-activite'));
+      chartDeptsAct = echarts.init(document.getElementById('chart-depts-activite'));
+      chartCrossAct = echarts.init(document.getElementById('chart-cross-activite'));
+
+      // Vue 2 : Emplois
+      chartSegmentsEmp = echarts.init(document.getElementById('chart-segments-emplois'));
+      chartTranchesEmp = echarts.init(document.getElementById('chart-tranches-emplois'));
+      chartRegionsEmp = echarts.init(document.getElementById('chart-regions-emplois'));
+      chartDeptsEmp = echarts.init(document.getElementById('chart-depts-emplois'));
+      chartTypologiesEmp = echarts.init(document.getElementById('chart-typologies-emplois'));
 
       window.addEventListener('resize', () => {
-        chartSegments && chartSegments.resize();
-        chartMaillons && chartMaillons.resize();
-        chartRegions && chartRegions.resize();
-        chartDepts && chartDepts.resize();
-        chartCross && chartCross.resize();
+        resizeAllCharts();
       });
     }
+
+    function resizeAllCharts() {
+      chartSegmentsAct && chartSegmentsAct.resize();
+      chartMaillonsAct && chartMaillonsAct.resize();
+      chartRegionsAct && chartRegionsAct.resize();
+      chartDeptsAct && chartDeptsAct.resize();
+      chartCrossAct && chartCrossAct.resize();
+
+      chartSegmentsEmp && chartSegmentsEmp.resize();
+      chartTranchesEmp && chartTranchesEmp.resize();
+      chartRegionsEmp && chartRegionsEmp.resize();
+      chartDeptsEmp && chartDeptsEmp.resize();
+      chartTypologiesEmp && chartTypologiesEmp.resize();
+    }
+
+    window.switchMainView = function(viewName) {
+      currentMainView = viewName;
+      document.getElementById('tab-btn-activites').classList.toggle('active', viewName === 'activites');
+      document.getElementById('tab-btn-emplois').classList.toggle('active', viewName === 'emplois');
+
+      document.getElementById('view-activites').classList.toggle('active', viewName === 'activites');
+      document.getElementById('view-emplois').classList.toggle('active', viewName === 'emplois');
+
+      setTimeout(() => {
+        resizeAllCharts();
+      }, 50);
+    };
 
     function onFilterChange() {
       const reg = document.getElementById('filter-region').value;
       const dept = document.getElementById('filter-dept').value;
       const seg = document.getElementById('filter-segment').value;
       const mai = document.getElementById('filter-maillon').value;
-      const q = document.getElementById('search-input').value.toLowerCase().trim();
+      const tranche = document.getElementById('filter-tranche').value;
 
       filteredData = allData.filter(d => {
         if (reg && d.region !== reg) return false;
         if (dept && d.departement !== dept) return false;
         if (seg && d.segmentCDV !== seg) return false;
         if (mai && d.maillonCDV !== mai) return false;
-        if (q) {
-          const match = d.entreprise.toLowerCase().includes(q) ||
-                        d.ville.toLowerCase().includes(q) ||
-                        d.produits.toLowerCase().includes(q) ||
-                        d.typologie.toLowerCase().includes(q);
-          if (!match) return false;
-        }
+        if (tranche && d.trancheCode !== tranche) return false;
         return true;
       });
 
@@ -843,7 +1095,7 @@
       document.getElementById('filter-dept').value = '';
       document.getElementById('filter-segment').value = '';
       document.getElementById('filter-maillon').value = '';
-      document.getElementById('search-input').value = '';
+      document.getElementById('filter-tranche').value = '';
       filteredData = [...allData];
       updateDashboard();
     }
@@ -852,103 +1104,136 @@
       const total = filteredData.length;
       const totalAll = allData.length;
 
-      // 1. Calcul des KPIs
-      document.getElementById('kpi-total').textContent = total;
-      document.getElementById('kpi-total-sub').textContent = total === totalAll 
-        ? `${totalAll} acteurs recensés au total` 
-        : `${((total/totalAll)*100).toFixed(1)}% de l'échantillon national (${total}/${totalAll})`;
-
-      const uniqueRegions = new Set(filteredData.map(d => d.region).filter(r => r && r !== 'Non spécifiée')).size;
-      const uniqueDepts = new Set(filteredData.map(d => d.departement).filter(d => d && d !== 'Non spécifié')).size;
-      document.getElementById('kpi-regions').textContent = `${uniqueRegions} / 13`;
-      document.getElementById('kpi-depts').textContent = `${uniqueDepts} départements représentés`;
-
-      // Concentration AURA + HDF
-      const top2Count = filteredData.filter(d => d.region === 'Auvergne-Rhône-Alpes' || d.region === 'Hauts-de-France').length;
-      const concRate = total > 0 ? ((top2Count / total) * 100).toFixed(1) : 0;
-      document.getElementById('kpi-concentration').textContent = `${concRate}%`;
-
-      // Gigafactories / Procédés
-      const gigaCount = filteredData.filter(d => d.segmentCDV.toLowerCase().includes('cellule') || d.segmentCDV.toLowerCase().includes('gigafactor')).length;
-      const gigaRate = total > 0 ? ((gigaCount / total) * 100).toFixed(1) : 0;
-      document.getElementById('kpi-gigafactories').textContent = `${gigaRate}%`;
-      document.getElementById('kpi-giga-count').textContent = `${gigaCount} acteur(s) manufacturing & procédés`;
-
-      // 2. Mettre à jour Graphique 1 (Segments CDV - Donut)
+      // =====================================================================
+      // 1. CALCULS KPI & DONNÉES COMMUNES
+      // =====================================================================
+      let sumBasse = 0, sumHaute = 0, sumMedian = 0;
+      const regCounts = {};
+      const regEmplois = {};
+      const deptCounts = {};
+      const deptEmplois = {};
       const segCounts = {};
+      const segEmplois = {};
+      const maiCounts = {};
+      const typoCounts = {};
+      const trancheCounts = {};
+
       filteredData.forEach(d => {
+        sumBasse += d.borneBasse;
+        sumHaute += d.borneHaute;
+        sumMedian += d.effectifMedian;
+
+        // Régions
+        if (d.region && d.region !== 'Non spécifiée') {
+          regCounts[d.region] = (regCounts[d.region] || 0) + 1;
+          regEmplois[d.region] = (regEmplois[d.region] || 0) + d.effectifMedian;
+        }
+
+        // Départements
+        if (d.departement && d.departement !== 'Non spécifié') {
+          deptCounts[d.departement] = (deptCounts[d.departement] || 0) + 1;
+          deptEmplois[d.departement] = (deptEmplois[d.departement] || 0) + d.effectifMedian;
+        }
+
+        // Segments & Maillons
         segCounts[d.segmentCDV] = (segCounts[d.segmentCDV] || 0) + 1;
+        segEmplois[d.segmentCDV] = (segEmplois[d.segmentCDV] || 0) + d.effectifMedian;
+        maiCounts[d.maillonCDV] = (maiCounts[d.maillonCDV] || 0) + 1;
+
+        // Typologies & Tranches
+        typoCounts[d.typologie] = (typoCounts[d.typologie] || 0) + 1;
+        trancheCounts[d.trancheLibelle] = (trancheCounts[d.trancheLibelle] || 0) + 1;
       });
-      const segData = Object.entries(segCounts).map(([name, value]) => ({
-        name: name.length > 45 ? name.substring(0, 42) + '...' : name,
-        fullName: name,
-        value: value,
-        ratio: total > 0 ? ((value / total) * 100).toFixed(1) : 0
+
+      // KPIs Vue Activités
+      document.getElementById('kpi-act-total').textContent = total;
+      document.getElementById('kpi-act-total-sub').textContent = total === totalAll 
+        ? `${totalAll} sites répertoriés au total` 
+        : `${((total/totalAll)*100).toFixed(1)}% de la base (${total}/${totalAll})`;
+
+      const uniqueRegions = Object.keys(regCounts).length;
+      const uniqueDepts = Object.keys(deptCounts).length;
+      document.getElementById('kpi-act-regions').textContent = `${uniqueRegions} / 13`;
+      document.getElementById('kpi-act-depts').textContent = `${uniqueDepts} départements représentés`;
+
+      const top2Count = (regCounts['Hauts-de-France'] || 0) + (regCounts['Auvergne-Rhône-Alpes'] || 0);
+      const concRate = total > 0 ? ((top2Count / total) * 100).toFixed(1) : 0;
+      document.getElementById('kpi-act-concentration').textContent = `${concRate}%`;
+
+      // KPIs Vue Emplois (Sans la moyenne médiane comme demandé)
+      const effValStr = sumMedian > 0 
+        ? `${Math.round(sumBasse).toLocaleString('fr-FR')} à ${Math.round(sumHaute).toLocaleString('fr-FR')} salariés` 
+        : "0 salarié";
+      document.getElementById('kpi-emp-total').textContent = effValStr;
+      document.getElementById('kpi-emp-total-sub').textContent = "Cumul bornes basse et haute";
+
+      const sortedRegEmplois = Object.entries(regEmplois).sort((a, b) => b[1] - a[1]);
+      if (sortedRegEmplois.length > 0) {
+        document.getElementById('kpi-emp-leader').textContent = sortedRegEmplois[0][0];
+        document.getElementById('kpi-emp-leader-sub').textContent = `~${Math.round(sortedRegEmplois[0][1]).toLocaleString('fr-FR')} salariés (${((sortedRegEmplois[0][1]/sumMedian)*100).toFixed(1)}%)`;
+      } else {
+        document.getElementById('kpi-emp-leader').textContent = "-";
+        document.getElementById('kpi-emp-leader-sub').textContent = "Aucune région";
+      }
+
+      document.getElementById('kpi-emp-sites').textContent = total;
+      document.getElementById('kpi-emp-sites-sub').textContent = `${total} sites industriels et R&D`;
+
+      // Options communes infobulles ECharts (affiche l'intégralité sans coupure)
+      const fullTooltipBase = {
+        extraCssText: 'max-width: 420px; white-space: normal; word-break: break-word; box-shadow: 0 4px 14px rgba(0,0,0,0.15); border-radius: 6px;'
+      };
+
+      // =====================================================================
+      // 2. RENDU DES GRAPHIQUES : VUE 1 (ACTIVITÉS)
+      // =====================================================================
+      
+      // Graphique 1.1 : Donut Segments CDV
+      const segActData = Object.entries(segCounts).map(([name, val]) => ({
+        name: name,
+        value: val
       })).sort((a, b) => b.value - a.value);
 
-      chartSegments.setOption({
+      chartSegmentsAct.setOption({
         color: DSFR_PALETTE,
         tooltip: {
           trigger: 'item',
-          formatter: function(p) {
-            return `<strong>${p.data.fullName || p.name}</strong><br/>Nombre : <strong>${p.value}</strong><br/>Ratio : <strong>${p.percent}%</strong>`;
-          }
+          ...fullTooltipBase,
+          formatter: (p) => `<strong>${p.name}</strong><br/>Établissements : <strong>${p.value}</strong><br/>Part : <strong>${p.percent}%</strong>`
         },
-        legend: {
-          orient: 'horizontal',
-          bottom: '0%',
-          type: 'scroll',
-          textStyle: { fontSize: 11, fontFamily: 'Marianne' }
-        },
+        legend: { orient: 'horizontal', bottom: '0%', type: 'scroll', textStyle: { fontSize: 11, fontFamily: 'Marianne' } },
         series: [{
           name: 'Segment CDV',
           type: 'pie',
-          radius: ['42%', '70%'],
+          radius: ['40%', '70%'],
           center: ['50%', '45%'],
-          avoidLabelOverlap: true,
           itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
-          label: {
-            show: false,
-            position: 'center'
-          },
-          emphasis: {
-            label: {
-              show: true,
-              fontSize: 14,
-              fontWeight: 'bold',
-              formatter: '{b}\n{d}%'
-            }
-          },
-          data: segData
+          label: { show: false },
+          emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold', formatter: '{b}\n{c} sites ({d}%)' } },
+          data: segActData
         }]
       });
 
-      // 3. Mettre à jour Graphique 2 (Top Maillons CDV - Barres Horizontales)
-      const maiCounts = {};
-      filteredData.forEach(d => {
-        maiCounts[d.maillonCDV] = (maiCounts[d.maillonCDV] || 0) + 1;
-      });
-      const topMaillons = Object.entries(maiCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .reverse();
-
-      chartMaillons.setOption({
+      // Graphique 1.2 : Top 10 Maillons CDV (Barres Horizontales)
+      const topMaillons = Object.entries(maiCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).reverse();
+      chartMaillonsAct.setOption({
         color: ['#1b8a3b'],
         tooltip: {
           trigger: 'axis',
           axisPointer: { type: 'shadow' },
-          formatter: function(params) {
+          ...fullTooltipBase,
+          formatter: (params) => {
             const p = params[0];
+            const fullMaillonName = topMaillons[p.dataIndex][0];
             const ratio = total > 0 ? ((p.value / total) * 100).toFixed(1) : 0;
-            return `<strong>${p.name}</strong><br/>Acteurs : <strong>${p.value}</strong> (${ratio}%)`;
+            return `<strong>${fullMaillonName}</strong><br/>Acteurs : <strong>${p.value} sites</strong> (${ratio}%)`;
           }
         },
         grid: { left: '3%', right: '8%', bottom: '3%', top: '5%', containLabel: true },
-        xAxis: { type: 'value', boundaryGap: [0, 0.05] },
+        xAxis: { type: 'value' },
         yAxis: {
           type: 'category',
-          data: topMaillons.map(m => m[0].length > 35 ? m[0].substring(0, 32) + '...' : m[0]),
+          data: topMaillons.map(m => m[0].length > 34 ? m[0].substring(0, 32) + '...' : m[0]),
           axisLabel: { fontSize: 11, fontFamily: 'Marianne' }
         },
         series: [{
@@ -960,106 +1245,283 @@
         }]
       });
 
-      // 4. Mettre à jour Graphique 3 (Poids Régional)
-      const regCounts = {};
-      filteredData.forEach(d => {
-        if (d.region && d.region !== 'Non spécifiée') {
-          regCounts[d.region] = (regCounts[d.region] || 0) + 1;
-        }
-      });
-      const sortedRegions = Object.entries(regCounts).sort((a, b) => b[1] - a[1]);
-
-      chartRegions.setOption({
+      // Graphique 1.3 : Entreprises par Région
+      const sortedRegionsAct = Object.entries(regCounts).sort((a, b) => b[1] - a[1]);
+      chartRegionsAct.setOption({
         color: ['#000091'],
         tooltip: {
           trigger: 'axis',
           axisPointer: { type: 'shadow' },
-          formatter: function(params) {
+          ...fullTooltipBase,
+          formatter: (params) => {
             const p = params[0];
             const ratio = total > 0 ? ((p.value / total) * 100).toFixed(1) : 0;
-            return `<strong>${p.name}</strong><br/>Entreprises : <strong>${p.value}</strong><br/>Part nationale : <strong>${ratio}%</strong>`;
+            return `<strong>${p.name}</strong><br/>Établissements : <strong>${p.value} sites</strong><br/>Part nationale : <strong>${ratio}%</strong>`;
           }
         },
         grid: { left: '3%', right: '5%', bottom: '18%', top: '8%', containLabel: true },
         xAxis: {
           type: 'category',
-          data: sortedRegions.map(r => r[0]),
+          data: sortedRegionsAct.map(r => r[0]),
           axisLabel: { interval: 0, rotate: 30, fontSize: 10, fontFamily: 'Marianne' }
         },
         yAxis: { type: 'value' },
         series: [{
-          name: 'Entreprises',
+          name: 'Établissements',
           type: 'bar',
-          data: sortedRegions.map(r => r[1]),
+          data: sortedRegionsAct.map(r => r[1]),
           itemStyle: { borderRadius: [4, 4, 0, 0] },
           label: { show: true, position: 'top', formatter: '{c}' }
         }]
       });
 
-      // 5. Mettre à jour Graphique 4 (Top 10 Départements)
-      const deptCounts = {};
-      filteredData.forEach(d => {
-        if (d.departement && d.departement !== 'Non spécifié') {
-          deptCounts[d.departement] = (deptCounts[d.departement] || 0) + 1;
-        }
-      });
-      const topDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).reverse();
-
-      chartDepts.setOption({
+      // Graphique 1.4 : Top 10 Départements (Nombre d'acteurs)
+      const topDeptsAct = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).reverse();
+      chartDeptsAct.setOption({
         color: ['#0066cc'],
         tooltip: {
           trigger: 'axis',
           axisPointer: { type: 'shadow' },
-          formatter: function(params) {
+          ...fullTooltipBase,
+          formatter: (params) => {
             const p = params[0];
+            const fullDeptName = topDeptsAct[p.dataIndex][0];
             const ratio = total > 0 ? ((p.value / total) * 100).toFixed(1) : 0;
-            return `<strong>${p.name}</strong><br/>Sites / Acteurs : <strong>${p.value}</strong> (${ratio}%)`;
+            return `<strong>${fullDeptName}</strong><br/>Sites : <strong>${p.value}</strong> (${ratio}%)`;
           }
         },
         grid: { left: '3%', right: '8%', bottom: '3%', top: '5%', containLabel: true },
         xAxis: { type: 'value' },
         yAxis: {
           type: 'category',
-          data: topDepts.map(d => d[0]),
+          data: topDeptsAct.map(d => d[0]),
           axisLabel: { fontSize: 11, fontFamily: 'Marianne' }
         },
         series: [{
-          name: 'Sites industriels',
+          name: 'Sites répertoriés',
           type: 'bar',
-          data: topDepts.map(d => d[1]),
+          data: topDeptsAct.map(d => d[1]),
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: { show: true, position: 'right', formatter: '{c}' }
         }]
       });
 
-      // 6. Mettre à jour Graphique 5 : Croisement Région × Segment CDV (Stacked Bar)
-      const topRegionsNames = sortedRegions.slice(0, 6).map(r => r[0]);
-      const allUniqueSegments = Array.from(new Set(filteredData.map(d => d.segmentCDV)));
+      // Graphique 1.5 : Matrice Croisée Région × Segment CDV (Stacked Bar)
+      const top6Regions = sortedRegionsAct.slice(0, 6).map(r => r[0]);
+      const uniqueSegList = Array.from(new Set(filteredData.map(d => d.segmentCDV)));
 
-      const crossSeries = allUniqueSegments.map((seg, idx) => {
-        return {
-          name: seg.length > 30 ? seg.substring(0, 28) + '...' : seg,
-          type: 'bar',
-          stack: 'total',
-          emphasis: { focus: 'series' },
-          data: topRegionsNames.map(reg => {
-            return filteredData.filter(d => d.region === reg && d.segmentCDV === seg).length;
-          })
-        };
-      });
+      const crossSeries = uniqueSegList.map(seg => ({
+        name: seg,
+        type: 'bar',
+        stack: 'total',
+        emphasis: { focus: 'series' },
+        data: top6Regions.map(reg => filteredData.filter(d => d.region === reg && d.segmentCDV === seg).length)
+      }));
 
-      chartCross.setOption({
+      chartCrossAct.setOption({
         color: DSFR_PALETTE,
-        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          ...fullTooltipBase,
+          formatter: (params) => {
+            let res = `<strong>${params[0].name}</strong><br/>`;
+            params.forEach(p => {
+              if (p.value > 0) {
+                res += `${p.marker} <strong>${p.seriesName}</strong> : <strong>${p.value} sites</strong><br/>`;
+              }
+            });
+            return res;
+          }
+        },
         legend: { bottom: '0%', type: 'scroll', textStyle: { fontSize: 11, fontFamily: 'Marianne' } },
         grid: { left: '3%', right: '4%', bottom: '15%', top: '8%', containLabel: true },
         xAxis: {
           type: 'category',
-          data: topRegionsNames,
+          data: top6Regions,
           axisLabel: { fontSize: 11, fontFamily: 'Marianne', fontWeight: 'bold' }
         },
-        yAxis: { type: 'value', name: 'Nombre d\'entreprises' },
+        yAxis: { type: 'value', name: 'Nombre de sites' },
         series: crossSeries
+      });
+
+      // =====================================================================
+      // 3. RENDU DES GRAPHIQUES : VUE 2 (EMPLOIS & EFFECTIFS)
+      // =====================================================================
+
+      // Graphique 2.1 : Volume d'Emplois par Segment CDV
+      const sortedSegEmplois = Object.entries(segEmplois).sort((a, b) => b[1] - a[1]).slice(0, 8).reverse();
+      chartSegmentsEmp.setOption({
+        color: ['#0066cc'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          ...fullTooltipBase,
+          formatter: (params) => {
+            const p = params[0];
+            const fullSegmentName = sortedSegEmplois[p.dataIndex][0];
+            const ratio = sumMedian > 0 ? ((p.value / sumMedian) * 100).toFixed(1) : 0;
+            return `<strong>${fullSegmentName}</strong><br/>Effectifs estimés : <strong>~${Math.round(p.value).toLocaleString('fr-FR')} salariés</strong> (${ratio}%)`;
+          }
+        },
+        grid: { left: '3%', right: '10%', bottom: '5%', top: '5%', containLabel: true },
+        xAxis: { type: 'value', name: 'Salariés estimés' },
+        yAxis: {
+          type: 'category',
+          data: sortedSegEmplois.map(s => s[0].length > 34 ? s[0].substring(0, 32) + '...' : s[0]),
+          axisLabel: { fontSize: 11, fontFamily: 'Marianne' }
+        },
+        series: [{
+          name: 'Effectifs',
+          type: 'bar',
+          data: sortedSegEmplois.map(s => Math.round(s[1])),
+          itemStyle: { borderRadius: [0, 4, 4, 0] },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (p) => `${p.value.toLocaleString('fr-FR')} p.`
+          }
+        }]
+      });
+
+      // Graphique 2.2 : Tranches d'Effectifs du Site (Donut)
+      const trancheOrder = ['< 50 salariés', '50 à 249 salariés', '250 à 499 salariés', '500 à 999 salariés', '1 000+ salariés', 'Non renseigné'];
+      const trancheData = trancheOrder.filter(t => trancheCounts[t] > 0).map(t => ({
+        name: t,
+        value: trancheCounts[t]
+      }));
+
+      chartTranchesEmp.setOption({
+        color: ['#1b8a3b', '#6a6af4', '#0066cc', '#ff7700', '#e1000f', '#929292'],
+        tooltip: {
+          trigger: 'item',
+          ...fullTooltipBase,
+          formatter: (p) => `<strong>${p.name}</strong><br/>Sites recensés : <strong>${p.value}</strong><br/>Proportion : <strong>${p.percent}%</strong>`
+        },
+        legend: { orient: 'horizontal', bottom: '0%', type: 'scroll', textStyle: { fontSize: 11, fontFamily: 'Marianne' } },
+        series: [{
+          name: 'Tranche effectifs site',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '45%'],
+          itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+          label: { show: false },
+          emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold', formatter: '{b}\n{c} sites ({d}%)' } },
+          data: trancheData
+        }]
+      });
+
+      // Graphique 2.3 : Volume d'Emplois par Région
+      chartRegionsEmp.setOption({
+        color: ['#000091'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          ...fullTooltipBase,
+          formatter: (params) => {
+            const p = params[0];
+            const ratio = sumMedian > 0 ? ((p.value / sumMedian) * 100).toFixed(1) : 0;
+            return `<strong>${p.name}</strong><br/>Effectifs régionaux : <strong>~${Math.round(p.value).toLocaleString('fr-FR')} salariés</strong><br/>Part nationale : <strong>${ratio}%</strong>`;
+          }
+        },
+        grid: { left: '3%', right: '5%', bottom: '18%', top: '8%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: sortedRegEmplois.map(r => r[0]),
+          axisLabel: { interval: 0, rotate: 30, fontSize: 10, fontFamily: 'Marianne' }
+        },
+        yAxis: { type: 'value', name: 'Salariés estimés' },
+        series: [{
+          name: 'Salariés',
+          type: 'bar',
+          data: sortedRegEmplois.map(r => Math.round(r[1])),
+          itemStyle: { borderRadius: [4, 4, 0, 0] },
+          label: {
+            show: true,
+            position: 'top',
+            formatter: (p) => p.value > 1000 ? `${(p.value/1000).toFixed(1)}k` : `${p.value}`
+          }
+        }]
+      });
+
+      // Graphique 2.4 : Volume d'Emplois par Département (Top 10)
+      const topDeptsEmp = Object.entries(deptEmplois).sort((a, b) => b[1] - a[1]).slice(0, 10).reverse();
+      chartDeptsEmp.setOption({
+        color: ['#854100'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          ...fullTooltipBase,
+          formatter: (params) => {
+            const p = params[0];
+            const fullDeptName = topDeptsEmp[p.dataIndex][0];
+            const ratio = sumMedian > 0 ? ((p.value / sumMedian) * 100).toFixed(1) : 0;
+            return `<strong>${fullDeptName}</strong><br/>Effectifs départementaux : <strong>~${Math.round(p.value).toLocaleString('fr-FR')} salariés</strong> (${ratio}%)`;
+          }
+        },
+        grid: { left: '3%', right: '10%', bottom: '3%', top: '5%', containLabel: true },
+        xAxis: { type: 'value' },
+        yAxis: {
+          type: 'category',
+          data: topDeptsEmp.map(d => d[0]),
+          axisLabel: { fontSize: 11, fontFamily: 'Marianne' }
+        },
+        series: [{
+          name: 'Salariés',
+          type: 'bar',
+          data: topDeptsEmp.map(d => Math.round(d[1])),
+          itemStyle: { borderRadius: [0, 4, 4, 0] },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (p) => `${p.value.toLocaleString('fr-FR')} p.`
+          }
+        }]
+      });
+
+      // Graphique 2.5 : Typologie d'entreprises (Pleine largeur avec Infobulle Complète)
+      const typoCategories = [
+        'Grands Groupes & Constructeurs',
+        'Gigafactories & Fabricants de cellules',
+        'ETI industrielles & Équipementiers',
+        'PME & Startups DeepTech',
+        'Organismes R&D & Acteurs Publics'
+      ];
+
+      chartTypologiesEmp.setOption({
+        color: ['#000091'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          ...fullTooltipBase,
+          formatter: (params) => {
+            const p = params[0];
+            const fullTypoName = typoCategories[p.dataIndex];
+            const ratio = total > 0 ? ((p.value / total) * 100).toFixed(1) : 0;
+            return `<strong>Typologie d'entreprises</strong> :<br/><strong>${fullTypoName}</strong><br/>Sites recensés : <strong>${p.value} établissements</strong> (${ratio}%)`;
+          }
+        },
+        grid: { left: '3%', right: '5%', bottom: '15%', top: '8%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: typoCategories,
+          axisLabel: {
+            interval: 0,
+            rotate: 15,
+            fontSize: 11,
+            fontFamily: 'Marianne',
+            fontWeight: 'bold',
+            formatter: (value) => value.length > 28 ? value.substring(0, 26) + '...' : value
+          }
+        },
+        yAxis: { type: 'value', name: 'Nombre d\'établissements' },
+        series: [{
+          name: 'Nombre de sites',
+          type: 'bar',
+          data: typoCategories.map(c => typoCounts[c] || 0),
+          itemStyle: { borderRadius: [4, 4, 0, 0] },
+          label: { show: true, position: 'top', formatter: '{c} sites' }
+        }]
       });
     }
 
